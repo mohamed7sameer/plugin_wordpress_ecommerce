@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BookApp API — كل الـ Endpoints</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #fff;
+      --ink: #122033;
+      --muted: #5b6b7c;
+      --line: #e4e9ef;
+      --blue: #1d4ed8;
+      --blue-soft: #e8eefc;
+      --get: #0f766e;
+      --post: #1d4ed8;
+      --put: #a16207;
+      --patch: #7c3aed;
+      --delete: #b91c1c;
+      --shadow: 0 10px 30px rgba(18, 32, 51, .06);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font: 16px/1.7 "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    header {
+      background: #0f2744;
+      color: #fff;
+      padding: 28px 20px 22px;
+    }
+    header .wrap, main, footer .wrap { max-width: 1080px; margin: 0 auto; }
+    header h1 { margin: 0 0 6px; font-size: 28px; }
+    header p { margin: 0; color: #c9d6e6; }
+    .base {
+      display: inline-block;
+      margin-top: 14px;
+      background: #16355a;
+      color: #dbeafe;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      direction: ltr;
+    }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(244,246,248,.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 20px;
+    }
+    .toolbar .wrap { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    input[type="search"] {
+      flex: 1;
+      min-width: 220px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      border: 0;
+      background: #fff;
+      color: var(--ink);
+      padding: 7px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+    }
+    .chip.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 20px 0;
+      box-shadow: var(--shadow);
+    }
+    nav.toc a { color: var(--blue); text-decoration: none; }
+    nav.toc ul { margin: 8px 0 0; padding-right: 18px; }
+    section { margin: 28px 0 40px; }
+    h2 { margin: 0 0 8px; font-size: 22px; }
+    .lead { color: var(--muted); margin: 0 0 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      margin: 12px 0;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+    .method {
+      font: 700 12px/1 Consolas, monospace;
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 6px;
+      min-width: 64px;
+      text-align: center;
+    }
+    .GET { background: var(--get); }
+    .POST { background: var(--post); }
+    .PUT { background: var(--put); }
+    .PATCH { background: var(--patch); }
+    .DELETE { background: var(--delete); }
+    .path {
+      font-family: Consolas, "Courier New", monospace;
+      direction: ltr;
+      text-align: left;
+      flex: 1;
+      word-break: break-all;
+    }
+    .auth {
+      font-size: 12px;
+      background: var(--blue-soft);
+      color: #1e3a8a;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+    .auth.guest { background: #ecfdf3; color: #166534; }
+    .auth.mix { background: #fff7ed; color: #9a3412; }
+    .card-body { padding: 14px; }
+    .card-body p { margin: 0 0 10px; }
+    pre, code {
+      font-family: Consolas, "Courier New", monospace;
+      direction: ltr;
+      text-align: left;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 10px;
+      overflow: auto;
+      font-size: 13px;
+      margin: 8px 0 0;
+    }
+    .ex-label {
+      margin: 14px 0 0;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+    .ex-label.req { color: #1d4ed8; }
+    .ex-label.res { color: #0f766e; }
+    .ex-label.err { color: #b91c1c; }
+    .card-body > .ex-label:first-child { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: right; vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 13px; }
+    .note {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 12px 0;
+    }
+    .cred {
+      background: #102a46;
+      color: #e8eef6;
+      border-radius: 14px;
+      padding: 18px;
+      margin: 20px 0;
+    }
+    .cred h2 { color: #fff; margin-bottom: 6px; }
+    .cred .lead { color: #b7c6d8; }
+    .cred table { background: transparent; }
+    .cred th, .cred td { border-color: #2a4666; color: #e8eef6; }
+    .cred th { color: #9fb3c8; }
+    .cred code, .cred pre { color: #dbeafe; }
+    .cred pre { background: #0b1c30; }
+    footer { padding: 24px 20px 40px; color: var(--muted); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>BookApp API</h1>
+      <p>كل الـ endpoints اللي الأب هيستخدمها على متجر كتب أي حاجة. آخر تحديث: 11 سبتمبر 2026.</p>
+      <div class="base">https://books.ay7aaga.com/wp-json</div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="wrap">
+      <input type="search" id="q" placeholder="ابحث: login، settings، identity، wishlist، cart...">
+      <div class="chips">
+        <button class="chip active" data-filter="all">الكل</button>
+        <button class="chip" data-filter="bookapp">BookApp</button>
+        <button class="chip" data-filter="store">Store API</button>
+        <button class="chip" data-filter="auth">حساب</button>
+        <button class="chip" data-filter="cart">سلة ودفع</button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <nav class="toc">
+      <strong>الأقسام</strong>
+      <ul>
+        <li><a href="#cred">بيانات الاتصال (للموبايل)</a></li>
+        <li><a href="#headers">الهيدرز والقواعد</a></li>
+        <li><a href="#app">إعدادات وهوم وصفحات</a></li>
+        <li><a href="#countries">دول الشحن والمحافظات</a></li>
+        <li><a href="#account">حساب</a></li>
+        <li><a href="#catalog">منتجات ومؤلفين وتقييم</a></li>
+        <li><a href="#lists">مفضلة ومقارنة</a></li>
+        <li><a href="#orders">طلبات</a> — إلغاء COD بالتفصيل في <a href="bookapp-cancel-order-docs.html">bookapp-cancel-order-docs.html</a></li>
+        <li><a href="#pay">تشيك أوت ودفع EasyKash</a></li>
+        <li><a href="#store">WooCommerce Store API</a></li>
+      </ul>
+    </nav>
+
+    <section id="cred">
+      <div class="cred">
+        <h2>بيانات الاتصال لمبرمج الموبايل</h2>
+        <p class="lead">ده اللي محتاجه عشان تربط الأب. حساب تجريبي عميل — مش أدمن، ومش محتاج دخول لوحة التحكم.</p>
+        <table>
+          <tr><th>الموقع</th><td dir="ltr"><code>https://books.ay7aaga.com</code></td></tr>
+          <tr><th>Base API</th><td dir="ltr"><code>https://books.ay7aaga.com/wp-json</code></td></tr>
+          <tr><th>BookApp API</th><td dir="ltr"><code>https://books.ay7aaga.com/wp-json/bookapp/v1</code></td></tr>
+          <tr><th>Store API (سلة/كتالوج)</th><td dir="ltr"><code>https://books.ay7aaga.com/wp-json/wc/store/v1</code></td></tr>
+          <tr><th>العملة</th><td>EGP</td></tr>
+          <tr><th>اللغة الافتراضية</th><td>ar (عربي RTL) — الإنجليزية <code>?lang=en</code></td></tr>
+        </table>
+        <p class="lead">بلاجن <code>bookapp-mobile-api</code> مربوطة بالمتجر ده فقط (<code>books.ay7aaga.com</code>). على أي دومين تاني التفعيل بيتوقف والـ BookApp API بيرجع <code>bookapp_site_locked</code> 403.</p>
+        <h3 style="margin:18px 0 8px">حساب تجريبي للاختبار</h3>
+        <table>
+          <tr><th>Username</th><td dir="ltr"><code>bookapp-app</code></td></tr>
+          <tr><th>Email</th><td dir="ltr"><code>app.tester@books.ay7aaga.com</code></td></tr>
+          <tr><th>Password</th><td dir="ltr"><code>BookApp#2026Test</code></td></tr>
+          <tr><th>Role</th><td>customer</td></tr>
+          <tr><th>Login URL</th><td dir="ltr"><code>https://books.ay7aaga.com/wp-json/bookapp/v1/auth/login</code></td></tr>
+        </table>
+<pre>POST https://books.ay7aaga.com/wp-json/bookapp/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "bookapp-app",
+  "password": "BookApp#2026Test"
+}
+
+# الرد فيه token — ابعت بعده:
+# Authorization: Bearer &lt;token&gt;</pre>
+        <p class="ex-label res" style="color:#86efac">Response 200</p>
+<pre>{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "expires_in": 2592000,
+  "user": {
+    "id": 1277,
+    "email": "app.tester@books.ay7aaga.com",
+    "username": "bookapp-app",
+    "first_name": "Ebaid",
+    "last_name": "Tester",
+    "display_name": "BookApp Tester",
+    "phone": "",
+    "roles": ["customer"],
+    "billing": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "email": "", "phone": "" },
+    "shipping": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "phone": "" }
+  }
+}</pre>
+        <p style="margin:12px 0 0;color:#b7c6d8">الزائر: من غير حساب. أول طلب لـ bootstrap أو wishlist هيرجع <code>guest_token</code> في البودي وهيدر <code>X-BookApp-Guest</code> — خزنه وابعتّه في كل طلب بعد كده. من غير نفس التوكن المفضلة هتبان فاضية.</p>
+      </div>
+    </section>
+
+    <section id="headers">
+      <h2>الهيدرز والقواعد</h2>
+      <p class="lead">ابعت JSON دائمًا. اللغة الافتراضية عربي.</p>
+      <div class="note">
+        السلة والكتالوج العام على <b>Store API</b> الجاهز من ووكومرس.
+        الحساب / الهوم / المفضلة / المقارنة / الطلبات / الدفع المغلف على <b>bookapp/v1</b>.
+      </div>
+      <div class="note">
+        <b>«العرض في التطبيق»</b> — كل منتج / تصنيف / وسم / مؤلف / دار نشر ليه فلاج بيتحكم فيه من ووردبريس
+        (صفحة المنتج أو صفحة التيرم — الافتراضي: ظاهر). اللي متعلّم عليه «مخفي» بيختفي من <b>كل API التطبيق</b>
+        (bookapp/v1 و v2 و Store API): القوائم والبحث والهوم والمفضلة والمقارنة، وطلب المنتج المفرد بيرجع
+        <code>404</code> (<code>bookapp_product_missing</code> في bookapp أو <code>404</code> من Store API).
+        إخفاء تصنيف رئيسي بيخفي التصنيفات الفرعية اللي تحته تلقائيًا، والفلاج بيتزامن بين ترجمات العربي والإنجليزي.
+        الاستثناءات: المنتج المخفي بيفضل ظاهر جوه <b>تفاصيل الطلبات القديمة</b>، وأسماء التصنيفات/المؤلفين بتفضل
+        ظاهرة جوه <code>categories</code> و <code>attributes</code> بتوع كارت منتج ظاهر. إخفاء تصنيف <b>مش</b> بيخفي كتبه
+        (الكتاب بيتخفي من فلاج المنتج نفسه). الموقع الإلكتروني مش بيتأثر إطلاقًا.
+      </div>
+      <table>
+        <tr><th>هيدر</th><th>متى</th></tr>
+        <tr><td dir="ltr"><code>Content-Type: application/json</code></td><td>أي POST / PATCH / PUT</td></tr>
+        <tr><td dir="ltr"><code>Authorization: Bearer &lt;jwt&gt;</code></td><td>مستخدم مسجّل. لو الهوست شال الهيدر: <code>X-BookApp-Authorization</code></td></tr>
+        <tr><td dir="ltr"><code>X-BookApp-Guest: &lt;uuid&gt;</code></td><td>زائر — خزنه من أول رد (هيدر أو <code>guest_token</code> في bootstrap / wishlist / compare) وابعت نفس القيمة دايمًا. ممكن كمان <code>guest_token</code> في الكويري أو البودي</td></tr>
+        <tr><td dir="ltr"><code>X-BookApp-App: 1</code></td><td>عند التشيك أوت عشان رجوع EasyKash يروح للأب</td></tr>
+        <tr><td dir="ltr"><code>X-BookApp-Platform: android</code> أو <code>ios</code></td><td>مع <code>bootstrap</code> / <code>settings</code> عشان الـ API يحسب <code>app.status</code> (تحديث اختياري أو إجباري)</td></tr>
+        <tr><td dir="ltr"><code>X-BookApp-Version: 1.0.0</code></td><td>نسخة الأب المركبة. ممكن كمان <code>?platform=android&amp;app_version=1.0.0</code></td></tr>
+        <tr><td dir="ltr"><code>Cart-Token</code></td><td>سلة الزائر من أول <code>GET https://books.ay7aaga.com/wp-json/wc/store/v1/cart</code></td></tr>
+        <tr><td dir="ltr"><code>Nonce</code></td><td>تعديل السلة والتشيك أوت — من رد السلة</td></tr>
+        <tr><td dir="ltr"><code>?lang=ar</code> أو <code>en</code></td><td>أو <code>Accept-Language</code></td></tr>
+      </table>
+      <p class="ex-label err">شكل الخطأ (كل الـ BookApp API)</p>
+<pre>{
+  "code": "bookapp_auth_required",
+  "message": "Login required.",
+  "data": { "status": 401 }
+}</pre>
+      <p style="color:var(--muted);font-size:14px;margin:8px 0 0">أكواد شائعة: <code>bookapp_auth_required</code> 401 — <code>bookapp_invalid_credentials</code> 403 — <code>bookapp_site_locked</code> 403 (البلاجن اتنسخت على دومين تاني) — <code>bookapp_missing_fields</code> 400 — <code>bookapp_email_exists</code> / <code>bookapp_order_not_cancellable</code> 409 — <code>bookapp_page_missing</code> / <code>bookapp_product_missing</code> / <code>bookapp_order_missing</code> / <code>bookapp_country_missing</code> 404.</p>
+    </section>
+
+    <section id="app" data-group="bookapp">
+      <h2>إعدادات وهوم وصفحات</h2>
+      <p class="lead">الهوم بيتعدّل من ووردبريس → BookApp مش من Elementor.</p>
+
+      <article class="card" data-tags="bookapp bootstrap">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/bootstrap</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>أول طلب عند فتح الأب: عملة، لغات، بوابات دفع، واتساب، هوية (لوجو + درجات ألوان + خطوط)، نسخ التطبيق (<code>app</code>)، توكن الزائر، وعداد المفضلة/المقارنة. خزن <code>guest_token</code> أو هيدر <code>X-BookApp-Guest</code>. الهوية والنسخ متاحين منفصلين من <code>GET /settings</code>. ابعت <code>X-BookApp-Platform</code> و <code>X-BookApp-Version</code> عشان <code>app.status</code> يتحسب.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/bootstrap?lang=ar</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "site": {
+    "name": "كتب أي حاجة أفضل موقع بيع كتب ورقية أونلاين لجميع دول العالم",
+    "url": "https://books.ay7aaga.com/",
+    "currency": "EGP",
+    "symbol": "EGP",
+    "lang": "ar"
+  },
+  "languages": [
+    { "code": "ar", "name": "العربية", "default": true, "dir": "rtl" },
+    { "code": "en", "name": "English", "default": false, "dir": "ltr" }
+  ],
+  "guest_token": "7fdc07f3-1fe2-44d7-86ef-d4b6c944f5a4",
+  "auth": { "logged_in": false, "user": null },
+  "counts": { "wishlist": 0, "compare": 0 },
+  "payments": [
+    { "id": "cod", "title": "الدفع عند الاستلام", "description": "الدفع عند التسليم", "offline": true, "webview": false },
+    { "id": "easykash", "title": "الدفع اونلاين أو تقسيط", "description": "ادفع أونلاين بالفيزا أو كارت ميزة أو بأي محفظة أو من خلال شركات التمويل والتقسيط.", "offline": false, "webview": true }
+  ],
+  "support": { "whatsapp": "201050994329", "email": "islam.osman.allam@gmail.com" },
+  "placeholders": { "author": null, "publisher": null },
+  "identity": {
+    "name": { "short": "كتب أي حاجة", "full": "متجر كتب أي حاجة" },
+    "tagline": "أي حاجة لبيع الكتب الورقية",
+    "dir": "rtl",
+    "logo": {
+      "full": "https://books.ay7aaga.com/wp-content/uploads/2024/10/Blue-and-Yellow-Festive-Illustrated-Bunch-of-Ballons-Party-Services-Logo-388-x-249-بيكسل-9-e1730293765432.png",
+      "icon": "https://books.ay7aaga.com/wp-content/uploads/2024/11/cropped-Blue-and-Yellow-Festive-Illustrated-Bunch-of-Ballons-Party-Services-Logo-388-x-249-بيكسل-16.png",
+      "splash": "https://books.ay7aaga.com/wp-content/uploads/2024/10/Blue-and-Yellow-Festive-Illustrated-Bunch-of-Ballons-Party-Services-Logo-388-x-249-بيكسل-9-e1730293765432.png"
+    },
+    "colors": {
+      "primary": {
+        "main": "#00669D",
+        "on": "#FFFFFF",
+        "scale": { "50": "#EBF3F7", "100": "#CCE0EB", "200": "#99C2D8", "300": "#66A3C4", "400": "#3385B1", "500": "#00669D", "600": "#005A8A", "700": "#004971", "800": "#003755", "900": "#002539" }
+      },
+      "secondary": { "main": "#11AAFF", "on": "#FFFFFF", "scale": { "50": "#ECF8FF", "100": "#CFEEFF", "200": "#A0DDFF", "300": "#70CCFF", "400": "#41BBFF", "500": "#11AAFF", "600": "#0F96E0", "700": "#0C7AB8", "800": "#095C8A", "900": "#063D5C" } },
+      "success": { "main": "#00D603", "on": "#000000", "scale": { "50": "#EBFCEB", "100": "#CCF7CD", "200": "#99EF9A", "300": "#66E668", "400": "#33DE35", "500": "#00D603", "600": "#00BC03", "700": "#009A02", "800": "#007402", "900": "#004D01" } },
+      "warning": { "main": "#E0B252", "on": "#000000", "scale": { "50": "#FDF9F1", "100": "#F9F0DC", "200": "#F3E0BA", "300": "#ECD197", "400": "#E6C175", "500": "#E0B252", "600": "#C59D48", "700": "#A1803B", "800": "#79602C", "900": "#51401E" } },
+      "error": { "main": "#DD3333", "on": "#FFFFFF", "scale": { "50": "#FCEFEF", "100": "#F8D6D6", "200": "#F1ADAD", "300": "#EB8585", "400": "#E45C5C", "500": "#DD3333", "600": "#C22D2D", "700": "#9F2525", "800": "#771C1C", "900": "#501212" } },
+      "text": { "primary": "#000000", "secondary": "#333333", "muted": "#6B7280", "inverse": "#FFFFFF" },
+      "background": { "default": "#FFFFFF", "surface": "#F8FAFC", "muted": "#F1F5F9" },
+      "link": { "idle": "#00669D", "hover": "#11AAFF" },
+      "status_bar": "#00669D",
+      "splash": "#00669D"
+    },
+    "fonts": {
+      "family": "Alexandria",
+      "fallback": ["Tahoma", "Arial", "sans-serif"],
+      "source": "google",
+      "url": "https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&display=swap",
+      "weights": [400, 500, 600, 700],
+      "roles": {
+        "body": { "family": "Alexandria", "weight": 400, "size": 15 },
+        "heading": { "family": "Alexandria", "weight": 500, "size": 22 },
+        "title": { "family": "Alexandria", "weight": 400, "size": 16 },
+        "button": { "family": "Alexandria", "weight": 500, "size": 14 },
+        "caption": { "family": "Alexandria", "weight": 400, "size": 12 }
+      }
+    }
+  },
+  "app": {
+    "android": { "latest": "1.0.0", "minimum": "1.0.0", "store_url": "" },
+    "ios": { "latest": "1.0.0", "minimum": "1.0.0", "store_url": "" },
+    "title": "تحديث جديد",
+    "message": "حدّث التطبيق عشان تستفيد من آخر المزايا والإصلاحات.",
+    "status": null
+  },
+  "store_api": {
+    "base": "https://books.ay7aaga.com/wp-json/wc/store/v1",
+    "cart_token_header": "Cart-Token",
+    "nonce_header": "Nonce",
+    "note": "Use Store API for catalog, cart, coupons, and shipping. Send X-BookApp-App: 1 on checkout so EasyKash returns to the app."
+  },
+  "pages": ["privacy-policy", "terms-of-use", "refund_returns"],
+  "locations": {
+    "default_country": "EG",
+    "default_state": "EGGZ",
+    "countries": "https://books.ay7aaga.com/wp-json/bookapp/v1/countries"
+  }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp settings identity bootstrap version">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/settings</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>إعدادات الأب فقط: الدعم + الهوية الكاملة (لوجو، درجات ألوان 50–900، خطوط) + نسخ أندرويد/آيفون. تتعدّل من ووردبريس → BookApp. نفس كائن <code>identity</code> و <code>app</code> موجودين جوه <code>bootstrap</code>. <code>placeholders</code> موجود للتوافق وبيرجع <code>null</code> — مفيش صور افتراضية للمؤلف أو الدار.</p>
+          <table>
+            <tr><th>الحقل</th><th>الاستخدام في الأب</th></tr>
+            <tr><td dir="ltr"><code>identity.logo.full</code></td><td>الهيدر والشاشات الواسعة</td></tr>
+            <tr><td dir="ltr"><code>identity.logo.icon</code></td><td>أيقونة التطبيق / فافيكون مربعة</td></tr>
+            <tr><td dir="ltr"><code>identity.logo.splash</code></td><td>شاشة الافتتاح</td></tr>
+            <tr><td dir="ltr"><code>placeholders.author</code></td><td>دائمًا <code>null</code>. لو المؤلف مالوش صورة في ووكومرس، <code>image</code> في الكروت و<code>/authors</code> و<code>/home</code> بترجع <code>null</code> — الأب يعرض شكل ثابت من عنده</td></tr>
+            <tr><td dir="ltr"><code>placeholders.publisher</code></td><td>دائمًا <code>null</code>. لو الدار مالهاش صورة، <code>image</code> بترجع <code>null</code></td></tr>
+            <tr><td dir="ltr"><code>identity.colors.primary.scale</code></td><td>درجات اللون الأساسي من 50 (فاتح) لـ 900 (غامق). <code>main</code> = اللون الأصلي، <code>on</code> = لون النص فوقه</td></tr>
+            <tr><td dir="ltr"><code>identity.fonts.url</code></td><td>حمّل خط جوجل (Alexandria). للأب الأصلي استخدم <code>family</code> + <code>weights</code></td></tr>
+            <tr><td dir="ltr"><code>app.android</code> / <code>app.ios</code></td><td><code>latest</code> أحدث نسخة في المتجر، <code>minimum</code> أقل نسخة مسموح تشتغل، <code>store_url</code> رابط التحديث. تتعدّل من ووردبريس → BookApp → نسخ التطبيق</td></tr>
+            <tr><td dir="ltr"><code>app.title</code> / <code>app.message</code></td><td>نصوص شاشة التحديث حسب <code>lang</code></td></tr>
+            <tr><td dir="ltr"><code>app.status</code></td><td><code>null</code> لو مبعتش منصة ونسخة. لو بعتّ <code>X-BookApp-Platform</code> + <code>X-BookApp-Version</code>: <code>update_available</code> و <code>force_update</code>. لو <code>force_update</code> true اقفل الأب وافتح <code>store_url</code></td></tr>
+          </table>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/settings?lang=ar</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "support": { "whatsapp": "201050994329", "email": "islam.osman.allam@gmail.com" },
+  "placeholders": { "author": null, "publisher": null },
+  "identity": {
+    "name": { "short": "كتب أي حاجة", "full": "متجر كتب أي حاجة" },
+    "tagline": "أي حاجة لبيع الكتب الورقية",
+    "dir": "rtl",
+    "logo": {
+      "full": "https://books.ay7aaga.com/wp-content/uploads/2024/10/Blue-and-Yellow-Festive-Illustrated-Bunch-of-Ballons-Party-Services-Logo-388-x-249-بيكسل-9-e1730293765432.png",
+      "icon": "https://books.ay7aaga.com/wp-content/uploads/2024/11/cropped-Blue-and-Yellow-Festive-Illustrated-Bunch-of-Ballons-Party-Services-Logo-388-x-249-بيكسل-16.png",
+      "splash": "https://books.ay7aaga.com/wp-content/uploads/2024/10/Blue-and-Yellow-Festive-Illustrated-Bunch-of-Ballons-Party-Services-Logo-388-x-249-بيكسل-9-e1730293765432.png"
+    },
+    "colors": {
+      "primary": {
+        "main": "#00669D",
+        "on": "#FFFFFF",
+        "scale": {
+          "50": "#EBF3F7",
+          "100": "#CCE0EB",
+          "200": "#99C2D8",
+          "300": "#66A3C4",
+          "400": "#3385B1",
+          "500": "#00669D",
+          "600": "#005A8A",
+          "700": "#004971",
+          "800": "#003755",
+          "900": "#002539"
+        }
+      },
+      "secondary": { "main": "#11AAFF", "on": "#FFFFFF", "scale": { "50": "#ECF8FF", "100": "#CFEEFF", "200": "#A0DDFF", "300": "#70CCFF", "400": "#41BBFF", "500": "#11AAFF", "600": "#0F96E0", "700": "#0C7AB8", "800": "#095C8A", "900": "#063D5C" } },
+      "success": { "main": "#00D603", "on": "#000000", "scale": { "50": "#EBFCEB", "100": "#CCF7CD", "200": "#99EF9A", "300": "#66E668", "400": "#33DE35", "500": "#00D603", "600": "#00BC03", "700": "#009A02", "800": "#007402", "900": "#004D01" } },
+      "warning": { "main": "#E0B252", "on": "#000000", "scale": { "50": "#FDF9F1", "100": "#F9F0DC", "200": "#F3E0BA", "300": "#ECD197", "400": "#E6C175", "500": "#E0B252", "600": "#C59D48", "700": "#A1803B", "800": "#79602C", "900": "#51401E" } },
+      "error": { "main": "#DD3333", "on": "#FFFFFF", "scale": { "50": "#FCEFEF", "100": "#F8D6D6", "200": "#F1ADAD", "300": "#EB8585", "400": "#E45C5C", "500": "#DD3333", "600": "#C22D2D", "700": "#9F2525", "800": "#771C1C", "900": "#501212" } },
+      "text": { "primary": "#000000", "secondary": "#333333", "muted": "#6B7280", "inverse": "#FFFFFF" },
+      "background": { "default": "#FFFFFF", "surface": "#F8FAFC", "muted": "#F1F5F9" },
+      "link": { "idle": "#00669D", "hover": "#11AAFF" },
+      "status_bar": "#00669D",
+      "splash": "#00669D"
+    },
+    "fonts": {
+      "family": "Alexandria",
+      "fallback": ["Tahoma", "Arial", "sans-serif"],
+      "source": "google",
+      "url": "https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&display=swap",
+      "weights": [400, 500, 600, 700],
+      "roles": {
+        "body": { "family": "Alexandria", "weight": 400, "size": 15 },
+        "heading": { "family": "Alexandria", "weight": 500, "size": 22 },
+        "title": { "family": "Alexandria", "weight": 400, "size": 16 },
+        "button": { "family": "Alexandria", "weight": 500, "size": 14 },
+        "caption": { "family": "Alexandria", "weight": 400, "size": 12 }
+      }
+    }
+  },
+  "app": {
+    "android": { "latest": "1.0.0", "minimum": "1.0.0", "store_url": "" },
+    "ios": { "latest": "1.0.0", "minimum": "1.0.0", "store_url": "" },
+    "title": "تحديث جديد",
+    "message": "حدّث التطبيق عشان تستفيد من آخر المزايا والإصلاحات.",
+    "status": null
+  }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp home deprecated">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/home</span>
+          <span class="auth guest">عام</span>
+          <span class="auth" style="background:#fde8e8;color:#b32d2e">قديم — هيتشال</span>
+        </div>
+        <div class="card-body">
+          <p><strong>⚠️ دي الهوم القديمة (هيكل ثابت).</strong> شغالة زي ما هي لحد ما الهوم الجديدة <code>GET /wp-json/bookapp/v2/home</code> (الكارت اللي بعده) تتعتمد، وبعدها هتتشال. متبنيش عليها شاشات جديدة.</p>
+          <p>شاشة الهوم: إعلان، هيرو، اختصارات، عروض، سلايدرز، تبويبات، مؤلفين، دور نشر. كل كتاب جوه <code>products</code> نفس شكل كارت المنتج (شوف قسم المنتجات) ومتوفر في المخزون. المصفوفات هنا مقصّرة. أي سيكشن / تبويب / اختصار / مؤلف مرتبط بتيرم متعلّم «مخفي من التطبيق» بيختفي من الرد تلقائيًا، والكتب المخفية مش بتظهر في <code>products</code>.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/home?lang=ar</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "announcement": {
+    "enabled": true,
+    "text": "يمكنك الدفع أونلاين من خلال فيزا - محفظة - ميزة كما يمكنك التقسيط من خلال البنك الأهلي 6 و 12 شهر ومن خلال فاليو وسهولة",
+    "link": ""
+  },
+  "hero": {
+    "title": "أي حاجة لبيع الكتب الورقية",
+    "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+    "image": "https://books.ay7aaga.com/wp-content/uploads/2025/02/البيت-الابيض-في-عهد-ترامب.jpg",
+    "cta1": { "label": "إصدارات حديثة", "type": "category", "id": 198 },
+    "cta2": { "label": "سور الأزبكية", "type": "category", "id": 187 }
+  },
+  "highlights": [
+    { "title": "كتب سور الأزبكية", "button": "اطلع عليه", "type": "category", "id": 187 },
+    { "title": "الإصدارات الحديثة", "button": "اطلع عليه", "type": "category", "id": 198 },
+    { "title": "نوادر الكتب", "button": "اطلع عليه", "type": "category", "id": 197 },
+    { "title": "الكتب الخارجية", "button": "اطلع عليه", "type": "category", "id": 265 }
+  ],
+  "why": [
+    { "title": "سهولة التصفح والاختيار", "text": "من غير أي إزعاج" },
+    { "title": "فيد واستفيد", "text": "بسيطة" }
+  ],
+  "promo": {
+    "enabled": true,
+    "title": "تخفيضات متجر كتب اي حاجة",
+    "image": "https://books.ay7aaga.com/wp-content/uploads/2025/06/Purple-Yellow-Modern-Memphis-Financial-Tips-Carousel-Instagram-Post-15.jpg",
+    "type": "sale",
+    "id": 0
+  },
+  "sections": [
+    {
+      "title": "تخفيضات متجر كتب اي حاجة",
+      "source": "sale",
+      "term_id": 0,
+      "button": "جميع الكتب المخفضة",
+      "products": [
+        {
+          "id": 47691,
+          "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+          "sku": "M794",
+          "on_sale": true,
+          "is_in_stock": true,
+          "prices": { "price": "45", "regular_price": "50", "sale_price": "45", "currency_code": "EGP", "currency_symbol": "EGP", "currency_minor_unit": 0 },
+          "images": [{ "id": 47694, "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-للكاتبة-انجيلا-ويلس-من-روايات-عبير-700x933.jpg", "alt": "..." }],
+          "in_wishlist": false,
+          "in_compare": false
+        }
+      ]
+    }
+  ],
+  "tabs": {
+    "title": "مليون كتاب وكتاب",
+    "items": [
+      { "title": "كتب", "term_id": 217, "products": ["...كارت منتج"] }
+    ]
+  },
+  "authors": {
+    "title": "مليون اسم واسم",
+    "items": [
+      { "id": 4132, "name": "نبيل فاروق", "count": 213, "image": null, "products": ["...كارت منتج"] }
+    ]
+  },
+  "publishers": {
+    "title": "دور النشر",
+    "text": "يمكنك من عرض إصداراتك علينا من خلال إرسال القوائم على الواتساب",
+    "button": "راسلنا",
+    "image": null,
+    "whatsapp": "201050994329"
+  }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp home v2 components banners builder">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v2/home</span>
+          <span class="auth guest">عام</span>
+          <span class="auth" style="background:#e6f6ec;color:#00733e">الهوم الجديدة</span>
+        </div>
+        <div class="card-body">
+          <p><strong>الهوم الجديدة — كومبوننتس.</strong> الرد <code>components</code>: مصفوفة مرتبة، كل عنصر <code>{ component, data }</code>. الترتيب والإضافة والحذف والتفعيل كله من ووردبريس → BookApp → <strong>Home Builder</strong>. الأب يرسم الشاشة بنفس ترتيب المصفوفة — ممكن يتكرر نفس النوع أكتر من مرة (مثلًا 3 سلايدرز منتجات). كل الداتا بترجع جاهزة (resolved) — مفيش داعي لطلبات إضافية لرسم الهوم. عناصر «مخفي من التطبيق» بتتشال تلقائيًا: <code>products_section</code> المرتبط بتيرم مخفي بيختفي كله، والتيرمز/المنتجات المخفية بتتشال من <code>component_ids.items</code> ومن <code>products</code>.</p>
+          <table>
+            <tr><th>component</th><th>الداتا اللي بترجع في <code>data</code></th></tr>
+            <tr><td dir="ltr"><code>announcement</code></td><td><code>text</code> حسب اللغة + <code>actionType</code> / <code>actionTarget</code></td></tr>
+            <tr><td dir="ltr"><code>banners</code></td><td><code>banner_ids</code> (الإعداد) + <code>banners</code>: بنرات جاهزة <code>{id, title, subtitle, imageUrl, actionType, actionTarget}</code>. البنرات بتتدار من ووردبريس → BookApp → <strong>البنرات</strong> (Custom Post Type — العنوان والوصف عربي/إنجليزي + صورة + أكشن). بترجع المنشور بس وبنفس ترتيب الـ IDs. لو <code>banner_ids</code> فاضية → كل البنرات المنشورة (الأحدث أولًا)</td></tr>
+            <tr><td dir="ltr"><code>component_ids</code></td><td>كروت بالـ IDs: <code>title</code>, <code>button_text</code>, <code>actionType</code> (category / tag / product / author / publisher), <code>ids</code>, <code>default_image</code>, <code>items</code>. للتصنيفات: <code>{id, name, count, image, parent}</code>. للمؤلفين: <code>{id, name, count, image, bio?}</code>. لدور النشر والوسوم: <code>{id, name, count, image}</code>. لو <code>actionType=product</code>: <code>items</code> = كروت منتجات كاملة. لو <code>actionType=category</code> و <code>ids</code> فاضية → كل التصنيفات الرئيسية (parent). الصورة: صورة الترم لو موجودة، وإلا <code>default_image</code> بتاعة السيكشن، وإلا <code>null</code></td></tr>
+            <tr><td dir="ltr"><code>products_section</code></td><td>سلايدر منتجات: <code>title</code>, <code>button_text</code>, <code>sort_by</code>, <code>action_type</code>, <code>action_target</code>, <code>limit</code> (1–24), <code>products</code> = كروت منتجات كاملة (نفس شكل كارت المنتج + <code>in_wishlist</code> / <code>in_compare</code> حسب <code>X-BookApp-Guest</code> أو التوكن). المنتجات متوفرة في المخزون بس</td></tr>
+            <tr><td dir="ltr"><code>call_to_action</code></td><td><code>title</code>, <code>subtitle</code>, <code>button_text</code>, <code>actionType</code>, <code>actionTarget</code></td></tr>
+          </table>
+          <table>
+            <tr><th>حقل</th><th>القيم</th></tr>
+            <tr><td dir="ltr"><code>products_section.action_type</code></td><td><code>all</code> كل المنتجات · <code>sale</code> المخفّض · <code>featured</code> المميز · <code>category</code> / <code>tag</code> / <code>author</code> / <code>publisher</code> (مع <code>action_target</code> = ID الترم) · <code>product</code> (منتج واحد بالـ ID)</td></tr>
+            <tr><td dir="ltr"><code>products_section.sort_by</code></td><td><code>newest</code> · <code>oldest</code> · <code>best_selling</code> · <code>price_low_to_high</code> · <code>price_high_to_low</code></td></tr>
+            <tr><td dir="ltr"><code>actionType</code> (أكشن الضغط)</td><td><code>category</code> · <code>tag</code> · <code>product</code> · <code>author</code> · <code>publisher</code> · <code>url</code> · فاضي = بدون أكشن. <code>actionTarget</code> = الـ ID كنص، أو الرابط الكامل (<code>https://...</code>) لو <code>actionType=url</code></td></tr>
+          </table>
+          <p>اللغة: <code>?lang=ar|en</code> أو <code>Accept-Language</code> — العناوين والنصوص بترجع باللغة المطلوبة، ولو الترجمة الإنجليزية فاضية بيرجع العربي. الهوم القديمة <code>bookapp/v1/home</code> لسه شغالة لكن هتتشال بعد اعتماد دي.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v2/home?lang=ar
+X-BookApp-Guest: 7fdc07f3-1fe2-44d7-86ef-d4b6c944f5a4</pre>
+          <p class="ex-label res">Response 200 (مقصّر)</p>
+<pre>{
+  "lang": "ar",
+  "components": [
+    {
+      "component": "announcement",
+      "data": {
+        "text": "يمكنك الدفع أونلاين من خلال فيزا - محفظة - ميزة كما يمكنك التقسيط من خلال البنك الأهلي 6 و 12 شهر ومن خلال فاليو وسهولة",
+        "actionType": "category",
+        "actionTarget": "198"
+      }
+    },
+    {
+      "component": "banners",
+      "data": {
+        "banner_ids": [],
+        "banners": [
+          {
+            "id": 48206,
+            "title": "أي حاجة لبيع الكتب الورقية",
+            "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+            "imageUrl": "https://books.ay7aaga.com/wp-content/uploads/2025/02/البيت-الابيض-في-عهد-ترامب.jpg",
+            "actionType": "category",
+            "actionTarget": "198"
+          },
+          { "id": 48207, "title": "تخفيضات متجر كتب اي حاجة", "subtitle": "", "imageUrl": "https://...jpg", "actionType": "tag", "actionTarget": "" }
+        ]
+      }
+    },
+    {
+      "component": "component_ids",
+      "data": {
+        "title": "تصفح حسب التصنيف",
+        "button_text": "عرض الكل",
+        "actionType": "category",
+        "ids": [187, 198, 197],
+        "default_image": "https://books.ay7aaga.com/wp-content/uploads/2024/04/مكتبة-أي-حاجة-في-سور-الازبكية.jpg",
+        "items": [
+          { "id": 187, "name": "سور الأزبكية", "count": 5327, "image": "https://...jpg", "parent": 0 }
+        ]
+      }
+    },
+    {
+      "component": "products_section",
+      "data": {
+        "title": "تخفيضات متجر كتب اي حاجة",
+        "button_text": "عرض الكل",
+        "sort_by": "newest",
+        "action_type": "sale",
+        "action_target": "",
+        "limit": 10,
+        "products": [
+          {
+            "id": 47691,
+            "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+            "on_sale": true,
+            "is_in_stock": true,
+            "prices": { "price": "45", "regular_price": "50", "sale_price": "45", "currency_code": "EGP", "currency_symbol": "EGP", "currency_minor_unit": 0 },
+            "images": [{ "id": 47694, "src": "https://...jpg", "alt": "..." }],
+            "in_wishlist": false,
+            "in_compare": false
+          }
+        ]
+      }
+    },
+    {
+      "component": "call_to_action",
+      "data": {
+        "title": "أي حاجة لبيع الكتب الورقية",
+        "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+        "button_text": "عرض الكل",
+        "actionType": "category",
+        "actionTarget": "198"
+      }
+    }
+  ]
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp pages">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/pages/{slug}</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>صفحات السياسات. الـ slugs:</p>
+          <table>
+            <tr><th>slug</th><th>الصفحة</th></tr>
+            <tr><td dir="ltr"><code>privacy-policy</code></td><td>سياسة الخصوصية</td></tr>
+            <tr><td dir="ltr"><code>terms-of-use</code></td><td>الشروط والأحكام</td></tr>
+            <tr><td dir="ltr"><code>refund_returns</code></td><td>الاسترداد والاسترجاع</td></tr>
+          </table>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/pages/privacy-policy?lang=ar</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "id": 3,
+  "slug": "privacy-policy",
+  "title": "سياسة الخصوصية",
+  "content": "&lt;p&gt;HTML كامل من ووردبريس...&lt;/p&gt;"
+}</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="countries" data-group="bookapp">
+      <h2>دول الشحن والمحافظات</h2>
+      <p class="lead">نفس قائمة دولة الشحن في التشيك أوت على الموقع، لكن هنا الافتراضي هو الدول اللي عليها Shipping Zones فعلاً (33 دولة). الاسم يتترجم حسب <code>lang</code>. بعد اختيار الدولة والمحافظة ابعتهم في <code>POST /wc/store/v1/cart/update-customer</code> عشان الشحن يتحسب.</p>
+
+      <article class="card" data-tags="bookapp countries shipping">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/countries</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>قائمة الدول لدروب داون الشحن/العنوان. الافتراضي: الدول اللي المتجر بيشحن لها فقط.</p>
+          <table>
+            <tr><th>باراميتر</th><th>المعنى</th></tr>
+            <tr><td dir="ltr"><code>lang</code></td><td><code>ar</code> أو <code>en</code> — اسم الدولة والمحافظة</td></tr>
+            <tr><td dir="ltr"><code>type</code></td><td><code>shipping</code> (افتراضي) أو <code>billing</code></td></tr>
+            <tr><td dir="ltr"><code>include_states</code></td><td><code>1</code> يرجّع المحافظات/الولايات جوه كل دولة</td></tr>
+            <tr><td dir="ltr"><code>shippable</code></td><td><code>1</code> افتراضي. <code>0</code> = كل دول ووكومرس (~250) زي دروب داون الموقع</td></tr>
+            <tr><td dir="ltr"><code>country</code></td><td>فلتر لدولة واحدة، مثال <code>EG</code> — ومعاه <code>states</code></td></tr>
+          </table>
+          <p>ابعت <code>country</code> (ISO) و <code>state</code> (كود ووكومرس زي <code>EGGZ</code>) في عنوان الشحن والفاتورة. الدولة الافتراضية للمتجر: مصر / الجيزة.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/countries?lang=ar</pre>
+          <p class="ex-label res">Response 200 — القائمة كاملة 33 دولة؛ هنا مختصرة</p>
+<pre>{
+  "lang": "ar",
+  "type": "shipping",
+  "default": { "country": "EG", "state": "EGGZ" },
+  "count": 33,
+  "countries": [
+    { "code": "ES", "name": "إسبانيا", "shippable": true, "has_states": true },
+    { "code": "AU", "name": "أستراليا", "shippable": true, "has_states": true },
+    { "code": "JO", "name": "الأردن", "shippable": true, "has_states": false },
+    { "code": "AE", "name": "الإمارات العربية المتحدة", "shippable": true, "has_states": false },
+    { "code": "BH", "name": "البحرين", "shippable": true, "has_states": false },
+    { "code": "DZ", "name": "الجزائر", "shippable": true, "has_states": true },
+    { "code": "SE", "name": "السويد", "shippable": true, "has_states": false },
+    { "code": "CN", "name": "الصين", "shippable": true, "has_states": true },
+    { "code": "IQ", "name": "العراق", "shippable": true, "has_states": false },
+    { "code": "KW", "name": "الكويت", "shippable": true, "has_states": false },
+    { "code": "DE", "name": "ألمانيا", "shippable": true, "has_states": true },
+    { "code": "MA", "name": "المغرب", "shippable": true, "has_states": true },
+    { "code": "SA", "name": "المملكة العربية السعودية", "shippable": true, "has_states": false },
+    { "code": "GB", "name": "المملكة المتحدة", "shippable": true, "has_states": false },
+    { "code": "NO", "name": "النرويج", "shippable": true, "has_states": false },
+    { "code": "AT", "name": "النمسا", "shippable": true, "has_states": false },
+    { "code": "IN", "name": "الهند", "shippable": true, "has_states": true },
+    { "code": "US", "name": "الولايات المتحدة الأمريكية", "shippable": true, "has_states": true },
+    { "code": "JP", "name": "اليابان", "shippable": true, "has_states": true },
+    { "code": "YE", "name": "اليمن", "shippable": true, "has_states": false },
+    { "code": "ID", "name": "إندونيسيا", "shippable": true, "has_states": true },
+    { "code": "IR", "name": "إيران", "shippable": true, "has_states": true },
+    { "code": "IT", "name": "إيطاليا", "shippable": true, "has_states": true },
+    { "code": "TR", "name": "تركيا", "shippable": true, "has_states": true },
+    { "code": "TN", "name": "تونس", "shippable": true, "has_states": false },
+    { "code": "SY", "name": "سوريا", "shippable": true, "has_states": false },
+    { "code": "OM", "name": "عمان", "shippable": true, "has_states": false },
+    { "code": "FR", "name": "فرنسا", "shippable": true, "has_states": false },
+    { "code": "QA", "name": "قطر", "shippable": true, "has_states": false },
+    { "code": "LB", "name": "لبنان", "shippable": true, "has_states": false },
+    { "code": "LY", "name": "ليبيا", "shippable": true, "has_states": false },
+    { "code": "EG", "name": "مصر", "shippable": true, "has_states": true },
+    { "code": "MR", "name": "موريتانيا", "shippable": true, "has_states": false }
+  ]
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp countries shipping">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/countries/{code}</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>دولة واحدة مع المحافظات/الولايات. لمصر الكود <code>EG</code> والمحافظة مثال <code>EGGZ</code> الجيزة، <code>EGC</code> القاهرة، <code>EGALX</code> الإسكندرية.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/countries/EG?lang=ar</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "code": "EG",
+  "name": "مصر",
+  "shippable": true,
+  "has_states": true,
+  "states": [
+    { "code": "EGALX", "name": "الإسكندرية" },
+    { "code": "EGASN", "name": "أسوان" },
+    { "code": "EGAST", "name": "أسيوط" },
+    { "code": "EGBA", "name": "البحر الأحمر" },
+    { "code": "EGBH", "name": "البحيرة" },
+    { "code": "EGBNS", "name": "بني سويف" },
+    { "code": "EGC", "name": "القاهرة" },
+    { "code": "EGDK", "name": "الدقهلية" },
+    { "code": "EGDT", "name": "دمياط" },
+    { "code": "EGFYM", "name": "الفيوم" },
+    { "code": "EGGH", "name": "الغربية" },
+    { "code": "EGGZ", "name": "الجيزة" },
+    { "code": "EGIS", "name": "الإسماعيلية" },
+    { "code": "EGJS", "name": "جنوب سيناء" },
+    { "code": "EGKB", "name": "القليوبية" },
+    { "code": "EGKFS", "name": "كفر الشيخ" },
+    { "code": "EGKN", "name": "قنا" },
+    { "code": "EGLX", "name": "الأقصر" },
+    { "code": "EGMN", "name": "المنيا" },
+    { "code": "EGMNF", "name": "المنوفية" },
+    { "code": "EGMT", "name": "مطروح" },
+    { "code": "EGPTS", "name": "بورسعيد" },
+    { "code": "EGSHG", "name": "سوهاج" },
+    { "code": "EGSHR", "name": "الشرقية" },
+    { "code": "EGSIN", "name": "شمال سيناء" },
+    { "code": "EGSUZ", "name": "السويس" },
+    { "code": "EGWAD", "name": "الوادي الجديد" }
+  ],
+  "lang": "ar",
+  "default": { "country": "EG", "state": "EGGZ" }
+}</pre>
+          <p class="ex-label err">Response 404</p>
+          <pre>{
+  "code": "bookapp_country_missing",
+  "message": "Country not found.",
+  "data": { "status": 404 }
+}</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="account" data-group="bookapp auth">
+      <h2>حساب</h2>
+      <p class="lead">التوكن JWT. الافتراضي صالح 30 يوم. بعد اللوجين/التسجيل المفضلة بتاعة الزائر بتندمج في الحساب.</p>
+
+      <article class="card" data-tags="bookapp auth login">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/auth/login</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+<pre>{
+  "username": "bookapp-app",
+  "password": "BookApp#2026Test",
+  "expires_in": 2592000
+}</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "expires_in": 2592000,
+  "user": {
+    "id": 1277,
+    "email": "app.tester@books.ay7aaga.com",
+    "username": "bookapp-app",
+    "first_name": "Ebaid",
+    "last_name": "Tester",
+    "display_name": "BookApp Tester",
+    "phone": "",
+    "roles": ["customer"],
+    "billing": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "email": "", "phone": "" },
+    "shipping": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "phone": "" }
+  }
+}</pre>
+          <p class="ex-label err">Response 403</p>
+<pre>{ "code": "bookapp_invalid_credentials", "message": "Invalid username or password.", "data": { "status": 403 } }</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp auth register">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/auth/register</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+<pre>{
+  "email": "user@example.com",
+  "password": "secret",
+  "first_name": "محمد",
+  "last_name": "أحمد",
+  "phone": "01000000000"
+}</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "user": {
+    "id": 1280,
+    "email": "user@example.com",
+    "username": "user@example.com",
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "display_name": "محمد أحمد",
+    "phone": "01000000000",
+    "roles": ["customer"],
+    "billing": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "email": "", "phone": "01000000000" },
+    "shipping": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "phone": "" }
+  }
+}</pre>
+          <p class="ex-label err">Response 409</p>
+<pre>{ "code": "bookapp_email_exists", "message": "Email already registered.", "data": { "status": 409 } }</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp auth password">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/auth/forgot-password</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "email": "user@example.com" }</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "ok": true,
+  "message": "If the account exists, a reset email was sent."
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp auth password">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/auth/reset-password</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+<pre>{
+  "login": "user@example.com",
+  "key": "reset-key-from-email",
+  "password": "new-secret"
+}</pre>
+          <p class="ex-label res">Response 200</p>
+          <pre>{ "ok": true }</pre>
+          <p class="ex-label err">Response 400</p>
+<pre>{ "code": "bookapp_invalid_reset", "message": "Invalid or expired reset key.", "data": { "status": 400 } }</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp auth me">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/me</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>بيانات الحساب الحالي. نفس كائن <code>user</code> اللي بيطلع من اللوجين.</p>
+          <p class="ex-label req">Request</p>
+<pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/me
+Authorization: Bearer &lt;jwt&gt;</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "id": 1277,
+  "email": "app.tester@books.ay7aaga.com",
+  "username": "bookapp-app",
+  "first_name": "Ebaid",
+  "last_name": "Tester",
+  "display_name": "BookApp Tester",
+  "phone": "",
+  "roles": ["customer"],
+  "billing": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "email": "", "phone": "" },
+  "shipping": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "phone": "" }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp auth me">
+        <div class="card-head">
+          <span class="method PATCH">PATCH</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/me</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+<pre>{
+  "first_name": "محمد",
+  "last_name": "أحمد",
+  "display_name": "محمد",
+  "phone": "01000000000"
+}</pre>
+          <p class="ex-label res">Response 200 — نفس شكل GET /me بعد التحديث</p>
+<pre>{
+  "id": 1277,
+  "email": "app.tester@books.ay7aaga.com",
+  "username": "bookapp-app",
+  "first_name": "محمد",
+  "last_name": "أحمد",
+  "display_name": "محمد",
+  "phone": "01000000000",
+  "roles": ["customer"],
+  "billing": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "email": "", "phone": "01000000000" },
+  "shipping": { "first_name": "", "last_name": "", "company": "", "address_1": "", "address_2": "", "city": "", "postcode": "", "country": "", "state": "", "phone": "" }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp auth password">
+        <div class="card-head">
+          <span class="method PUT">PUT</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/me/password</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "current_password": "old", "new_password": "new-secret" }</pre>
+          <p class="ex-label res">Response 200</p>
+          <pre>{ "ok": true, "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..." }</pre>
+          <p>خزن التوكن الجديد — الباسورد اتغيّر.</p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp auth address">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/me/addresses</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>عنوان الفاتورة والشحن.</p>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "billing": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "company": "",
+    "address_1": "شارع التحرير",
+    "address_2": "",
+    "city": "القاهرة",
+    "postcode": "11511",
+    "country": "EG",
+    "state": "EGGZ",
+    "email": "user@example.com",
+    "phone": "01000000000"
+  },
+  "shipping": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "company": "",
+    "address_1": "شارع التحرير",
+    "address_2": "",
+    "city": "القاهرة",
+    "postcode": "11511",
+    "country": "EG",
+    "state": "EGGZ",
+    "phone": ""
+  }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp auth address">
+        <div class="card-head">
+          <span class="method PUT">PUT</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/me/addresses</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+<pre>{
+  "billing": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "phone": "01000000000",
+    "email": "user@example.com",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  },
+  "shipping": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  }
+}</pre>
+          <p class="ex-label res">Response 200 — نفس شكل GET /me/addresses بعد الحفظ</p>
+        </div>
+      </article>
+    </section>
+
+    <section id="catalog" data-group="bookapp">
+      <h2>منتجات ومؤلفين وتقييم</h2>
+      <p class="lead">قائمة الكتب والفلاتر من Store API. التفاصيل المجمّعة والمؤلفين من BookApp API. كارت المنتج الواحد بيتكرر في الهوم / المفضلة / المقارنة / related. القوائم (هوم، Store API، related) بترجع الكتب المتاحة فقط — نفاد المخزون مش بيظهر. صفحة المنتج بالمعرف والمفضلة/المقارنة ممكن ترجّع كتاب نفد عشان المستخدم يشوفه. الكتاب أو المؤلف/الناشر المتعلّم «مخفي من التطبيق» في ووردبريس مش بيظهر هنا خالص (راجع قاعدة «العرض في التطبيق» فوق).</p>
+
+      <article class="card" data-tags="bookapp product">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/products/{id}</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>تفاصيل الكتاب + صور + الصفات الظاهرة على صفحة المنتج (مؤلف، ناشر، حجم، سنة…) + <code>in_wishlist</code> + <code>in_compare</code> + related + reviews. <code>attributes</code> بتيجي من ووكومرس لو «Visible on the product page» متعلم — مش قائمة ثابتة. لو الكتاب متعلّم «مخفي من التطبيق» بيرجع <code>404 bookapp_product_missing</code> (وكمان <code>/reviews</code> بتاعته).</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/products/47691?lang=ar</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "id": 47691,
+  "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+  "slug": "%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d8%a7%d9%84%d8%b9%d8%b4%d9%8a%d9%82%d8%a9-%d8%a7%d9%84%d8%b0%d9%87%d8%a8%d9%8a%d8%a9-%d9%84%d9%84%d9%83%d8%a7%d8%aa%d8%a8%d8%a9-%d8%a7%d9%86%d8%ac%d9%8a%d9%84%d8%a7",
+  "permalink": "https://books.ay7aaga.com/product/.../",
+  "sku": "M794",
+  "type": "simple",
+  "short_description": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+  "description": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+  "on_sale": true,
+  "is_in_stock": true,
+  "is_purchasable": true,
+  "stock_status": "instock",
+  "average_rating": 0,
+  "review_count": 0,
+  "prices": {
+    "price": "45",
+    "regular_price": "50",
+    "sale_price": "45",
+    "currency_code": "EGP",
+    "currency_symbol": "EGP",
+    "currency_minor_unit": 0
+  },
+  "images": [
+    {
+      "id": 47694,
+      "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-للكاتبة-انجيلا-ويلس-من-روايات-عبير-700x933.jpg",
+      "alt": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير"
+    }
+  ],
+  "categories": [
+    { "id": 232, "name": "روايات", "slug": "%d8%b1%d9%88%d8%a7%d9%8a%d8%a7%d8%aa" },
+    { "id": 187, "name": "سور الأزبكية", "slug": "%d8%b3%d9%88%d8%b1-%d8%a7%d9%84%d8%a3%d8%b2%d8%a8%d9%83%d9%8a%d8%a9" }
+  ],
+  "attributes": [
+    {
+      "id": "pa_publisher",
+      "name": "الناشر",
+      "options": [{ "id": 5537, "name": "دار النحاس", "slug": "%d8%af%d8%a7%d8%b1-%d8%a7%d9%84%d9%86%d8%ad%d8%a7%d8%b3", "image": null }]
+    },
+    {
+      "id": "pa_writer",
+      "name": "المؤلف",
+      "options": [{ "id": 3277, "name": "انجيلا توماس", "slug": "%d8%a7%d9%86%d8%ac%d9%8a%d9%84%d8%a7-%d8%aa%d9%88%d9%85%d8%a7%d8%b3", "image": null }]
+    },
+    {
+      "id": "pa_size",
+      "name": "الحجم",
+      "options": [{ "id": 3630, "name": "صغير", "slug": "%d8%b5%d8%ba%d9%8a%d8%b1" }]
+    }
+  ],
+  "in_wishlist": false,
+  "in_compare": false,
+  "related": [
+    { "id": 16446, "name": "كتاب كرسي على الشمال للكاتب أنيس منصور", "sku": "S506", "prices": { "price": "70", "regular_price": "70", "sale_price": "", "currency_code": "EGP" }, "in_wishlist": false, "in_compare": false }
+  ],
+  "reviews": []
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp reviews">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/products/{id}/reviews</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>قراءة التقييمات المعتمدة فقط — زي الموقع.</p>
+          <p class="ex-label res">Response 200 — فاضي لو مفيش تقييم معتمد</p>
+          <pre>{ "items": [] }</pre>
+          <p class="ex-label res">Response 200 — لو فيه تقييم</p>
+<pre>{
+  "items": [
+    {
+      "id": 9012,
+      "author": "محمد",
+      "content": "كتاب ممتاز",
+      "rating": 5,
+      "date_created": "2026-09-01 14:22:10"
+    }
+  ]
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp reviews auth">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/products/{id}/reviews</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>كتابة تقييم بعد تسجيل الدخول. بيتراجع قبل ما يظهر (<code>moderation: true</code>).</p>
+          <p class="ex-label req">Request body</p>
+          <pre>{ "rating": 5, "content": "كتاب ممتاز" }</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "ok": true,
+  "id": 9012,
+  "moderation": true
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp authors">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/authors</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>بعد ما تاخد <code>id</code>، فلتر الكتب من Store API بـ <code>attributes[0][attribute]=pa_writer</code> و <code>attributes[0][term_id]=id</code>. <code>attribute</code> + <code>attribute_term</code> بيتتجاهلوا وبيرجعوا آخر المنتجات.</p>
+          <p>كل مؤلف بيرجع <code>image</code>: لو صورة المؤلف متضافة في ووكومرس / WoodMart (<code>pa_term_image</code>) بيرجع رابطها (URL). لو مفيش صورة بيرجع <code>null</code> — <strong>مفيش صورة افتراضية</strong>، فالأب لازم يتعامل مع <code>null</code> (يعرض شكل ثابت من عنده مثلًا). نفس القاعدة على <code>/home</code> و<code>attributes</code> بتاعة <code>pa_writer</code>.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/authors?search=نجيب&amp;page=1</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "items": [
+    { "id": 4705, "name": "جمال نجيب التلاوي", "slug": "%d8%ac%d9%85%d8%a7%d9%84-%d9%86%d8%ac%d9%8a%d8%a8-%d8%a7%d9%84%d8%aa%d9%84%d8%a7%d9%88%d9%8a", "count": 1, "image": "https://books.ay7aaga.com/wp-content/uploads/2026/09/author-4705.jpg" },
+    { "id": 2786, "name": "زكي نجيب محمود", "slug": "%d8%b2%d9%83%d9%8a-%d9%86%d8%ac%d9%8a%d8%a8-%d9%85%d8%ad%d9%85%d9%88%d8%af", "count": 7, "image": null },
+    { "id": 3164, "name": "مجدى نجيب", "slug": "%d9%85%d8%ac%d8%af%d9%89-%d9%86%d8%ac%d9%8a%d8%a8", "count": 1, "image": null }
+  ],
+  "page": 1
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp publishers">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/publishers</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>كل دار نشر بترجع <code>image</code>: لو الصورة متضافة في ووكومرس / WoodMart (<code>pa_term_image</code>) بيرجع رابطها (URL). لو مفيش صورة بيرجع <code>null</code> — <strong>مفيش صورة افتراضية</strong>، فالأب لازم يتعامل مع <code>null</code>. نفس القاعدة على <code>/home</code> و<code>attributes</code> بتاعة <code>pa_publisher</code>.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/publishers?search=دار&amp;page=1</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "items": [
+    { "id": 3795, "name": "BLOOMSBURY", "slug": "bloomsbury", "count": 1, "image": "https://books.ay7aaga.com/wp-content/uploads/2026/09/publisher-3795.jpg" },
+    { "id": 3793, "name": "penguin Random House", "slug": "penguin-random-house", "count": 1, "image": null },
+    { "id": 374, "name": "أخبار اليوم", "slug": "%d8%af%d8%a7%d8%b1-%d8%a7%d8%ae%d8%a8%d8%a7%d8%b1-%d8%a7%d9%84%d9%8a%d9%88%d9%85", "count": 12, "image": null }
+  ],
+  "page": 1
+}</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="lists" data-group="bookapp">
+      <h2>مفضلة ومقارنة</h2>
+      <p class="lead">تشتغل للزائر (هيدر الضيف) وللمسجّل (JWT). المفضلة بتتربط بـ WoodMart بعد اللوجين. الزائر لازم يبعت نفس <code>X-BookApp-Guest</code> / <code>guest_token</code> في الإضافة والقراءة.</p>
+
+      <article class="card" data-tags="bookapp wishlist">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/wishlist</span>
+          <span class="auth mix">ضيف أو JWT</span>
+        </div>
+        <div class="card-body">
+          <p>يرجع <code>guest_token</code> و <code>count</code> و <code>ids</code> و <code>products</code>. خزن <code>guest_token</code> لو لسه مش عندك.</p>
+          <p class="ex-label res">Response 200 — فاضي</p>
+          <pre>{ "guest_token": "7fdc07f3-1fe2-44d7-86ef-d4b6c944f5a4", "count": 0, "ids": [], "products": [] }</pre>
+          <p class="ex-label res">Response 200 — بعد إضافة كتاب</p>
+<pre>{
+  "guest_token": "7fdc07f3-1fe2-44d7-86ef-d4b6c944f5a4",
+  "count": 1,
+  "ids": [47691],
+  "products": [
+    {
+      "id": 47691,
+      "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+      "sku": "M794",
+      "prices": { "price": "45", "regular_price": "50", "sale_price": "45", "currency_code": "EGP", "currency_symbol": "EGP", "currency_minor_unit": 0 },
+      "images": [{ "id": 47694, "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-للكاتبة-انجيلا-ويلس-من-روايات-عبير-700x933.jpg", "alt": "..." }],
+      "in_wishlist": true,
+      "in_compare": false
+    }
+  ]
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp wishlist">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/wishlist</span>
+          <span class="auth mix">ضيف أو JWT</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "product_id": 47691 }</pre>
+          <p>هيدر: <code>X-BookApp-Guest: &lt;uuid&gt;</code> — أو JWT لو مسجّل.</p>
+          <p class="ex-label res">Response 200 — نفس شكل GET /wishlist بعد الإضافة، وفيه <code>guest_token</code></p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp wishlist">
+        <div class="card-head">
+          <span class="method DELETE">DELETE</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/wishlist/{product_id}</span>
+          <span class="auth mix">ضيف أو JWT</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request</p>
+          <pre>DELETE https://books.ay7aaga.com/wp-json/bookapp/v1/wishlist/47691</pre>
+          <p class="ex-label res">Response 200 — نفس شكل GET /wishlist بعد الحذف</p>
+          <pre>{ "guest_token": "7fdc07f3-1fe2-44d7-86ef-d4b6c944f5a4", "count": 0, "ids": [], "products": [] }</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp compare">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/compare</span>
+          <span class="auth mix">ضيف أو JWT</span>
+        </div>
+        <div class="card-body">
+          <p>قائمة المقارنة للمقارنة جنب بعض. <code>fields</code> هي الأعمدة المقترحة للمقارنة.</p>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "guest_token": "7fdc07f3-1fe2-44d7-86ef-d4b6c944f5a4",
+  "count": 1,
+  "ids": [47691],
+  "fields": ["name", "prices", "sku", "attributes", "average_rating", "is_in_stock"],
+  "products": [
+    {
+      "id": 47691,
+      "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+      "sku": "M794",
+      "is_in_stock": true,
+      "average_rating": 0,
+      "prices": { "price": "45", "regular_price": "50", "sale_price": "45", "currency_code": "EGP" },
+      "in_wishlist": true,
+      "in_compare": true
+    }
+  ]
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp compare">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/compare</span>
+          <span class="auth mix">ضيف أو JWT</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "product_id": 47691 }</pre>
+          <p class="ex-label res">Response 200 — نفس شكل GET /compare بعد الإضافة</p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp compare">
+        <div class="card-head">
+          <span class="method DELETE">DELETE</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/compare/{product_id}</span>
+          <span class="auth mix">ضيف أو JWT</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label req">Request</p>
+          <pre>DELETE https://books.ay7aaga.com/wp-json/bookapp/v1/compare/47691</pre>
+          <p class="ex-label res">Response 200 — نفس شكل GET /compare بعد الحذف</p>
+          <pre>{ "guest_token": "7fdc07f3-1fe2-44d7-86ef-d4b6c944f5a4", "count": 0, "ids": [], "fields": ["name", "prices", "sku", "attributes", "average_rating", "is_in_stock"], "products": [] }</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="orders" data-group="bookapp">
+      <h2>طلبات</h2>
+      <p class="lead">توثيق إلغاء طلب الدفع عند الاستلام منفصل للأب: <a href="bookapp-cancel-order-docs.html">bookapp-cancel-order-docs.html</a></p>
+
+      <article class="card" data-tags="bookapp orders">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/orders</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>كل عنصر فيه <code>can_cancel</code>. الأب يعرض زر الإلغاء من الفلاج ده مش من حساب <code>status</code> + <code>payment_method</code> محليًا.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/orders?page=1</pre>
+          <p class="ex-label res">Response 200 — حساب جديد</p>
+          <pre>{ "items": [], "total": 0, "total_pages": 0, "page": 1 }</pre>
+          <p class="ex-label res">Response 200 — بعد طلب</p>
+<pre>{
+  "items": [
+    {
+      "id": 12345,
+      "number": "12345",
+      "status": "processing",
+      "status_name": "قيد التنفيذ",
+      "date_created": "2026-09-05T01:10:00+03:00",
+      "total": "95.00",
+      "currency": "EGP",
+      "payment_method": "cod",
+      "payment_title": "الدفع عند الاستلام",
+      "needs_payment": false,
+      "can_cancel": true,
+      "billing": { "first_name": "محمد", "last_name": "أحمد", "email": "user@example.com", "phone": "01000000000", "address_1": "شارع التحرير", "city": "القاهرة", "state": "EGGZ", "postcode": "11511", "country": "EG" },
+      "shipping": { "first_name": "محمد", "last_name": "أحمد", "address_1": "شارع التحرير", "city": "القاهرة", "state": "EGGZ", "postcode": "11511", "country": "EG" },
+      "items": [],
+      "shipping_total": "50",
+      "discount_total": "0"
+    }
+  ],
+  "total": 1,
+  "total_pages": 1,
+  "page": 1
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp orders">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/orders/{id}</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>تفاصيل طلب يخص المستخدم الحالي فقط. القائمة مش بترجع أصناف الكتاب؛ التفاصيل بترجع. نفس فلاج <code>can_cancel</code> الموجود في القائمة.</p>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "id": 12345,
+  "number": "12345",
+  "status": "processing",
+  "status_name": "قيد التنفيذ",
+  "date_created": "2026-09-05T01:10:00+03:00",
+  "total": "95.00",
+  "currency": "EGP",
+  "payment_method": "easykash",
+  "payment_title": "الدفع اونلاين أو تقسيط",
+  "needs_payment": false,
+  "can_cancel": false,
+  "billing": { "first_name": "محمد", "last_name": "أحمد", "email": "user@example.com", "phone": "01000000000", "address_1": "شارع التحرير", "city": "القاهرة", "state": "EGGZ", "country": "EG" },
+  "shipping": { "first_name": "محمد", "last_name": "أحمد", "address_1": "شارع التحرير", "city": "القاهرة", "state": "EGGZ", "country": "EG" },
+  "items": [
+    {
+      "id": 88,
+      "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+      "quantity": 1,
+      "total": "45",
+      "product": { "id": 47691, "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير", "sku": "M794", "prices": { "price": "45", "currency_code": "EGP" } }
+    }
+  ],
+  "shipping_total": "50",
+  "discount_total": "0"
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp orders cancel">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/orders/cancel</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>إلغاء طلب الدفع عند الاستلام قبل ما الأدمن ياخد عليه أكشن. نفس شكل التتبع: <code>POST /orders/cancel</code> + <code>order_id</code> في البودي (مش <code>/orders/{id}/cancel</code>). الشروط على السيرفر: الطلب بتاع المستخدم الحالي، <code>payment_method=cod</code>، والحالة <code>processing</code> أو <code>pending</code>. EasyKash والمدفوع أونلاين مش بيتلغوا من الأب. بعد النجاح الحالة تبقى <code>cancelled</code> و<code>can_cancel</code> يبقى false. الشرح الكامل للأب في <a href="bookapp-cancel-order-docs.html">bookapp-cancel-order-docs.html</a>.</p>
+          <p class="ex-label req">Request</p>
+<pre>POST https://books.ay7aaga.com/wp-json/bookapp/v1/orders/cancel
+Authorization: Bearer &lt;jwt&gt;
+Content-Type: application/json
+
+{ "order_id": 12345 }</pre>
+          <p class="ex-label res">Response 200 — نفس شكل GET /orders/{id}</p>
+<pre>{
+  "id": 12345,
+  "status": "cancelled",
+  "status_name": "ملغي",
+  "payment_method": "cod",
+  "can_cancel": false
+}</pre>
+          <p class="ex-label err">Response 400 — من غير order_id</p>
+<pre>{ "code": "bookapp_missing_fields", "message": "order_id is required.", "data": { "status": 400 } }</pre>
+          <p class="ex-label err">Response 401</p>
+<pre>{ "code": "bookapp_auth_required", "message": "Login required.", "data": { "status": 401 } }</pre>
+          <p class="ex-label err">Response 404 — طلب مش موجود أو مش بتاع المستخدم</p>
+<pre>{ "code": "bookapp_order_missing", "message": "Order not found.", "data": { "status": 404 } }</pre>
+          <p class="ex-label err">Response 409 — مش COD أو الأدمن غيّر الحالة</p>
+<pre>{
+  "code": "bookapp_order_not_cancellable",
+  "message": "This order cannot be cancelled.",
+  "data": { "status": 409, "can_cancel": false, "order_status": "completed", "payment_method": "cod" }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp orders track">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/orders/track</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p>تتبع زي صفحة الموقع: رقم الطلب + الإيميل.</p>
+          <p class="ex-label req">Request body</p>
+          <pre>{ "order_id": 12345, "email": "user@example.com" }</pre>
+          <p class="ex-label res">Response 200 — نفس شكل GET /orders/{id}</p>
+          <p class="ex-label err">Response 404</p>
+<pre>{ "code": "bookapp_track_failed", "message": "Order not found.", "data": { "status": 404 } }</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="pay" data-group="bookapp cart">
+      <h2>تشيك أوت ودفع EasyKash</h2>
+      <div class="note">
+        <b>الصح زي الموقع:</b> الأب مبياخدش رقم فيزا.
+        بعد إنشاء الطلب بـ EasyKash افتح <code>app_payment.payment_url</code> في WebView.
+        العميل يدفع فيزا / محفظة / ميزة / تقسيط على صفحة EasyKash.
+        لما الـ URL يبقى فيه <code>https://books.ay7aaga.com/wp-json/bookapp/v1/payments/easykash/return</code> اقفل الـ WebView وحدّث الطلب.
+      </div>
+
+      <article class="card" data-tags="bookapp checkout cart easykash">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/checkout</span>
+          <span class="auth mix">Nonce + Cart-Token أو JWT</span>
+        </div>
+        <div class="card-body">
+          <p>غلّاف على Store API checkout. ابعت نفس جسم Store API + الهيدرز.</p>
+          <p class="ex-label req">Request</p>
+<pre>Headers:
+  X-BookApp-App: 1
+  Nonce: &lt;from cart&gt;
+  Cart-Token: &lt;from cart&gt;
+  Authorization: Bearer &lt;jwt&gt;   // لو مسجّل
+
+{
+  "billing_address": { "first_name": "محمد", "last_name": "أحمد", "email": "a@b.com", "phone": "01000000000", "address_1": "...", "city": "القاهرة", "country": "EG", "state": "EGGZ" },
+  "shipping_address": { "first_name": "محمد", "last_name": "أحمد", "address_1": "...", "city": "القاهرة", "country": "EG", "state": "EGGZ" },
+  "payment_method": "easykash"
+}</pre>
+          <p><code>payment_method</code>: <code>cod</code> أو <code>easykash</code>. الرد هو رد Store API + كائن <code>app_payment</code>.</p>
+          <p class="ex-label res">Response 200 — EasyKash</p>
+<pre>{
+  "order_id": 12345,
+  "status": "checkout-draft",
+  "order_key": "wc_order_xxxx",
+  "customer_id": 1277,
+  "billing_address": { "first_name": "محمد", "last_name": "أحمد", "email": "a@b.com", "phone": "01000000000", "address_1": "...", "city": "القاهرة", "country": "EG", "state": "EGGZ" },
+  "shipping_address": { "first_name": "محمد", "last_name": "أحمد", "address_1": "...", "city": "القاهرة", "country": "EG", "state": "EGGZ" },
+  "payment_method": "easykash",
+  "payment_result": {
+    "payment_status": "pending",
+    "payment_details": [],
+    "redirect_url": "https://easykash.net/pay/xxxxx"
+  },
+  "app_payment": {
+    "method": "easykash",
+    "requires_webview": true,
+    "payment_url": "https://easykash.net/pay/xxxxx",
+    "return_contains": ["bookapp/v1/payments/easykash/return", "bookapp-payment:"],
+    "note": "Open payment_url in a WebView. Close WebView when the URL contains /payments/easykash/return then refresh the order."
+  }
+}</pre>
+          <p class="ex-label res">Response 200 — COD</p>
+<pre>{
+  "order_id": 12346,
+  "payment_method": "cod",
+  "payment_result": { "payment_status": "success", "redirect_url": "" },
+  "app_payment": {
+    "method": "cod",
+    "requires_webview": false,
+    "payment_url": "",
+    "return_contains": ["bookapp/v1/payments/easykash/return", "bookapp-payment:"],
+    "note": "COD completes without a WebView."
+  }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="bookapp checkout easykash">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/payments/easykash/return</span>
+          <span class="auth guest">رجوع WebView</span>
+        </div>
+        <div class="card-body">
+          <p>مش بتنادي عليه بإيدك. EasyKash بيرجع العميل هنا بعد الدفع. لو <code>Accept: application/json</code> بيرجع JSON، غير كده HTML.</p>
+          <p class="ex-label res">Response 200 — Accept: application/json</p>
+<pre>{
+  "ok": true,
+  "status": "SUCCESS",
+  "order_id": 12345,
+  "voucher": "EK-123456"
+}</pre>
+          <p><code>ok</code> يبقى true لو <code>status</code> واحدة من: SUCCESS / PAID / PENDING / NEW.</p>
+        </div>
+      </article>
+    </section>
+
+    <section id="store" data-group="store cart">
+      <h2>WooCommerce Store API — كتالوج وسلة</h2>
+      <p class="lead">موجودة أصلًا على الموقع. الأب يستخدمها مباشرة. قائمة المنتجات بترجع المتوفر فقط، والعناصر المتعلّمة «مخفي من التطبيق» (منتجات / تصنيفات / وسوم / مؤلفين / دور نشر) مش بترجع هنا — والمنتج المخفي بالمعرف أو الـ slug بيرجع <code>404</code>. Base: <span dir="ltr"><code>https://books.ay7aaga.com/wp-json/wc/store/v1</code></span></p>
+
+      <article class="card" data-tags="store catalog">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>قائمة الكتب. BookApp بيفلتر نفاد المخزون تلقائيًا — الرد <code>instock</code> و <code>onbackorder</code> فقط. مش محتاج تبعت <code>stock_status</code>.</p>
+          <table>
+            <tr><th>باراميتر</th><th>مثال</th></tr>
+            <tr><td dir="ltr"><code>page</code> / <code>per_page</code></td><td>1 / 20</td></tr>
+            <tr><td dir="ltr"><code>search</code></td><td>نجيب محفوظ</td></tr>
+            <tr><td dir="ltr"><code>category</code></td><td>198 إصدارات حديثة — 187 سور الأزبكية</td></tr>
+            <tr><td dir="ltr"><code>attributes[0][attribute]</code> + <code>attributes[0][term_id]</code></td><td>Store API مش بيقبل <code>attribute</code> / <code>attribute_term</code> (دول <code>wc/v3</code>). استخدم المصفوفة: <code>pa_writer</code> + رقم المؤلف من <code>/bookapp/v1/authors</code></td></tr>
+            <tr><td dir="ltr"><code>min_price</code> / <code>max_price</code></td><td>بالعملة الصغرى حسب الموقع</td></tr>
+            <tr><td dir="ltr"><code>orderby</code></td><td>date, price, popularity</td></tr>
+            <tr><td dir="ltr"><code>on_sale</code></td><td>true</td></tr>
+          </table>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/wc/store/v1/products?per_page=20&amp;search=رواية&amp;lang=ar
+GET https://books.ay7aaga.com/wp-json/wc/store/v1/products?attributes[0][attribute]=pa_writer&amp;attributes[0][term_id]=2786&amp;per_page=20&amp;page=1&amp;lang=ar
+GET https://books.ay7aaga.com/wp-json/wc/store/v1/products?attributes[0][attribute]=pa_publisher&amp;attributes[0][term_id]=374&amp;per_page=20&amp;page=1&amp;lang=ar</pre>
+          <p class="ex-label res">Response 200 — مصفوفة. كل عنصر فيه حقول كتير من ووكومرس؛ ده الشكل المختصر اللي الأب محتاجه</p>
+<pre>[
+  {
+    "id": 47691,
+    "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+    "slug": "%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-...",
+    "parent": 0,
+    "type": "simple",
+    "permalink": "https://books.ay7aaga.com/product/.../",
+    "sku": "M794",
+    "short_description": "&lt;p&gt;رواية العشيقة الذهبية...&lt;/p&gt;",
+    "on_sale": true,
+    "prices": {
+      "price": "45",
+      "regular_price": "50",
+      "sale_price": "45",
+      "price_range": null,
+      "currency_code": "EGP",
+      "currency_symbol": "EGP",
+      "currency_minor_unit": 0
+    },
+    "average_rating": "0",
+    "review_count": 0,
+    "images": [
+      {
+        "id": 47694,
+        "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-للكاتبة-انجيلا-ويلس-من-روايات-عبير.jpg",
+        "thumbnail": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-للكاتبة-انجيلا-ويلس-من-روايات-عبير-430x573.jpg",
+        "alt": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير"
+      }
+    ],
+    "categories": [
+      { "id": 232, "name": "روايات", "slug": "%d8%b1%d9%88%d8%a7%d9%8a%d8%a7%d8%aa", "link": "https://books.ay7aaga.com/book-category/..." },
+      { "id": 187, "name": "سور الأزبكية", "slug": "%d8%b3%d9%88%d8%b1-%d8%a7%d9%84%d8%a3%d8%b2%d8%a8%d9%83%d9%8a%d8%a9", "link": "https://books.ay7aaga.com/book-category/..." }
+    ],
+    "is_in_stock": true
+  }
+]</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store catalog">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products/{id}</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>تفاصيل منتج خام من ووكومرس (نفس عنصر المصفوفة فوق، مش كارت BookApp). للتفاصيل الأغنى استخدم <code>bookapp/v1/products/{id}</code>.</p>
+          <p class="ex-label res">Response 200 — نفس شكل عنصر واحد من قائمة المنتجات</p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store catalog">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products/{slug}</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>نفس تفاصيل المنتج بالـ slug.</p>
+          <p class="ex-label res">Response 200 — نفس عنصر <code>/products/{id}</code></p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store catalog">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products/categories</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>أقسام الكتب. فيه كمان <code>/products/categories/{id}</code>.</p>
+          <table>
+            <tr><th>باراميتر</th><th>المعنى</th></tr>
+            <tr><td dir="ltr"><code>parent=0</code></td><td>الكاتيجوري الرئيسية فقط</td></tr>
+            <tr><td dir="ltr"><code>parent=187</code></td><td>الفرعيات التابعة لقسم (مثال: سور الأزبكية)</td></tr>
+            <tr><td dir="ltr"><code>per_page</code></td><td>عدد النتائج — افتراضي صغير، استخدم 100</td></tr>
+          </table>
+          <p>من غير <code>parent</code> بيرجع الكل. فرّق برضه من حقل <code>parent</code> في الرد: <code>0</code> = رئيسية، غير كده = id الأب.</p>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/wc/store/v1/products/categories?parent=0&amp;per_page=100
+GET https://books.ay7aaga.com/wp-json/wc/store/v1/products/categories?parent=187&amp;per_page=100</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>[
+  { "id": 198, "name": "إصدارات حديثة", "slug": "%d8%b7%d8%a8%d8%b9%d8%a7%d8%aa-%d9%88%d8%a5%d8%b5%d8%af%d8%a7%d8%b1%d8%a7%d8%aa-%d8%ad%d8%af%d9%8a%d8%ab%d8%a9", "parent": 0, "count": 1642, "image": null, "permalink": "https://books.ay7aaga.com/book-category/..." },
+  { "id": 187, "name": "سور الأزبكية", "slug": "%d8%b3%d9%88%d8%b1-%d8%a7%d9%84%d8%a3%d8%b2%d8%a8%d9%83%d9%8a%d8%a9", "parent": 0, "count": 8200, "image": null, "permalink": "https://books.ay7aaga.com/book-category/..." }
+]</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store catalog">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products/attributes</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>صفات الفلترة. بعد كده:</p>
+          <pre>https://books.ay7aaga.com/wp-json/wc/store/v1/products/attributes/{id}
+https://books.ay7aaga.com/wp-json/wc/store/v1/products/attributes/{id}/terms</pre>
+          <table>
+            <tr><th>slug</th><th>المعنى</th></tr>
+            <tr><td dir="ltr">pa_writer</td><td>المؤلف</td></tr>
+            <tr><td dir="ltr">pa_publisher</td><td>الناشر</td></tr>
+            <tr><td dir="ltr">pa_publish-year</td><td>سنة النشر</td></tr>
+            <tr><td dir="ltr">pa_type-book</td><td>حالة الكتاب</td></tr>
+            <tr><td dir="ltr">pa_age</td><td>السن</td></tr>
+            <tr><td dir="ltr">pa_class</td><td>الصف</td></tr>
+            <tr><td dir="ltr">pa_the-term</td><td>الترم</td></tr>
+            <tr><td dir="ltr">pa_study-material</td><td>المادة</td></tr>
+            <tr><td dir="ltr">pa_number</td><td>عدد الأجزاء</td></tr>
+            <tr><td dir="ltr">pa_size</td><td>الحجم</td></tr>
+            <tr><td dir="ltr">pa_artist</td><td>رسوم</td></tr>
+            <tr><td dir="ltr">pa_note</td><td>ملاحظات</td></tr>
+          </table>
+          <p class="ex-label res">Response 200 — /products/attributes</p>
+<pre>[
+  { "id": 8, "name": "السن", "taxonomy": "pa_age", "type": "select", "order": "menu_order", "has_archives": true, "count": 1 },
+  { "id": 9, "name": "رسوم", "taxonomy": "pa_artist", "type": "select", "order": "menu_order", "has_archives": true, "count": 2 },
+  { "id": 11, "name": "الصف", "taxonomy": "pa_class", "type": "select", "order": "menu_order", "has_archives": true, "count": 5 }
+]</pre>
+          <p class="ex-label res">Response 200 — /products/attributes/{id}/terms</p>
+<pre>[
+  { "id": 3277, "name": "انجيلا توماس", "slug": "...", "description": "", "parent": 0, "count": 3 }
+]</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store catalog">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products/tags</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>التاجات (مثلاً الأكثر مبيعاً).</p>
+          <p class="ex-label res">Response 200</p>
+<pre>[
+  { "id": 3924, "name": "الأكثر مبيعاً", "slug": "...", "description": "", "parent": 0, "count": 40 }
+]</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store catalog">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products/brands</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>البراندات إن وجدت. فيه كمان <code>/products/brands/{id}</code>.</p>
+          <p class="ex-label res">Response 200 — مصفوفة بنفس شكل الأقسام (id / name / slug / count / image)</p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store catalog reviews">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products/reviews</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>تقييمات عامة. لتقييم كتاب معيّن فضّل <code>bookapp/v1/products/{id}/reviews</code>.</p>
+          <p class="ex-label res">Response 200</p>
+<pre>[
+  {
+    "id": 9012,
+    "date_created": "2026-09-01T14:22:10",
+    "product_id": 47691,
+    "product_name": "رواية العشيقة الذهبية...",
+    "product_permalink": "https://books.ay7aaga.com/product/.../",
+    "reviewer": "محمد",
+    "review": "كتاب ممتاز",
+    "rating": 5,
+    "verified": true
+  }
+]</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store catalog">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/products/collection-data</span><span class="auth guest">عام</span></div>
+        <div class="card-body">
+          <p>عدادات الفلتر (facets) وسعر من/إلى. نفس فلاتر قائمة المنتجات. ابعت <code>calculate_price_range=true</code> عشان السعر.</p>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "price_range": {
+    "min_price": "0",
+    "max_price": "6225",
+    "currency_code": "EGP",
+    "currency_symbol": "EGP",
+    "currency_minor_unit": 0
+  },
+  "attribute_counts": null,
+  "rating_counts": null,
+  "stock_status_counts": null,
+  "taxonomy_counts": null
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart</span><span class="auth mix">Cart-Token</span></div>
+        <div class="card-body">
+          <p>أول طلب سلة: خزن هيدر الرد <code>Cart-Token</code> و <code>Nonce</code> وابعتهم في كل طلب بعد كده.</p>
+          <p class="ex-label res">Headers</p>
+<pre>Cart-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Nonce: 79122e5f98</pre>
+          <p class="ex-label res">Response 200 — سلة فاضية</p>
+<pre>{
+  "items": [],
+  "coupons": [],
+  "fees": [],
+  "totals": {
+    "total_items": "0",
+    "total_discount": "0",
+    "total_shipping": null,
+    "total_price": "0",
+    "currency_code": "EGP",
+    "currency_symbol": "EGP",
+    "currency_minor_unit": 0
+  },
+  "shipping_address": { "first_name": "", "last_name": "", "address_1": "", "city": "", "state": "", "postcode": "", "country": "", "phone": "" },
+  "billing_address": { "first_name": "", "last_name": "", "address_1": "", "city": "", "state": "", "postcode": "", "country": "", "email": "", "phone": "" },
+  "needs_payment": false,
+  "needs_shipping": false,
+  "has_calculated_shipping": false,
+  "shipping_rates": [],
+  "items_count": 0,
+  "payment_methods": ["cod", "easykash"],
+  "errors": []
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/add-item</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "id": 47691, "quantity": 1 }</pre>
+          <p class="ex-label res">Response 201 — جسم السلة كامل بعد الإضافة</p>
+<pre>{
+  "items_count": 1,
+  "items": [
+    {
+      "key": "498caf50e8859f04fb9cf7a4ae05a83a",
+      "id": 47691,
+      "quantity": 1,
+      "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+      "sku": "M794",
+      "totals": { "line_subtotal": "45", "line_total": "45", "currency_code": "EGP", "currency_symbol": "EGP" },
+      "images": [{ "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-للكاتبة-انجيلا-ويلس-من-روايات-عبير.jpg" }]
+    }
+  ],
+  "coupons": [],
+  "totals": { "total_items": "45", "total_discount": "0", "total_shipping": null, "total_price": "45", "currency_code": "EGP" },
+  "needs_payment": true,
+  "needs_shipping": true,
+  "payment_methods": ["cod", "easykash"],
+  "shipping_rates": []
+}</pre>
+          <p>خزن <code>items[0].key</code> عشان التعديل والحذف.</p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/update-item</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "key": "498caf50e8859f04fb9cf7a4ae05a83a", "quantity": 2 }</pre>
+          <p class="ex-label res">Response 200 — جسم السلة كامل؛ <code>items[0].quantity</code> يبقى 2 و <code>totals</code> يتحدّث</p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/remove-item</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "key": "498caf50e8859f04fb9cf7a4ae05a83a" }</pre>
+          <p class="ex-label res">Response 200 — جسم سلة فاضية أو باقي الأصناف</p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/items</span><span class="auth mix">Cart-Token</span></div>
+        <div class="card-body">
+          <p>كمان: POST لإضافة، DELETE لتفريغ السلة، و <code>/cart/items/{key}</code> GET/PUT/DELETE لصنف واحد.</p>
+          <p class="ex-label res">Response 200 — مصفوفة الأصناف فقط (مش جسم السلة الكامل)</p>
+<pre>[
+  {
+    "key": "498caf50e8859f04fb9cf7a4ae05a83a",
+    "id": 47691,
+    "quantity": 1,
+    "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+    "sku": "M794"
+  }
+]</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart coupon">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/apply-coupon</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "code": "SAVE10" }</pre>
+          <p class="ex-label res">Response 200 — جسم السلة؛ <code>coupons</code> و <code>totals.total_discount</code> يتحدّثوا</p>
+<pre>{
+  "coupons": [{ "code": "save10", "totals": { "total_discount": "10", "currency_code": "EGP" } }],
+  "totals": { "total_items": "45", "total_discount": "10", "total_price": "35", "currency_code": "EGP" },
+  "items_count": 1
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart coupon">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/remove-coupon</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "code": "SAVE10" }</pre>
+          <p class="ex-label res">Response 200 — جسم السلة؛ <code>coupons</code> تبقى فاضية</p>
+        </div>
+
+      <article class="card" data-tags="store cart coupon">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/coupons</span><span class="auth mix">Cart-Token</span></div>
+        <div class="card-body">
+          <p>كمان POST/DELETE على نفس المسار، و <code>/cart/coupons/{code}</code> GET/DELETE.</p>
+          <p class="ex-label res">Response 200</p>
+          <pre>[{ "code": "save10", "totals": { "total_discount": "10", "currency_code": "EGP" } }]</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart shipping">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/update-customer</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p>يبعت العنوان عشان الشحن يتحسب (قاهرة، إسكندرية، صعيد، خليج...).</p>
+<pre>{
+  "billing_address": { "country": "EG", "state": "EGGZ", "city": "القاهرة" },
+          "shipping_address": { "country": "EG", "state": "EGGZ", "city": "القاهرة" }
+}</pre>
+          <p class="ex-label res">Response 200 — جسم السلة؛ <code>shipping_rates</code> تتملّى بعد العنوان</p>
+<pre>{
+  "has_calculated_shipping": true,
+  "shipping_rates": [
+    {
+      "package_id": 0,
+      "name": "شحن",
+      "destination": { "address_1": "", "city": "القاهرة", "state": "EGGZ", "country": "EG" },
+      "shipping_rates": [
+        { "rate_id": "flat_rate:4", "name": "القاهرة", "price": "50", "selected": true }
+      ]
+    }
+  ],
+  "totals": { "total_items": "45", "total_shipping": "50", "total_price": "95", "currency_code": "EGP" }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart shipping">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/cart/select-shipping-rate</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p class="ex-label req">Request body</p>
+          <pre>{ "package_id": 0, "rate_id": "flat_rate:4" }</pre>
+          <p class="ex-label res">Response 200 — جسم السلة؛ الـ rate المختار <code>selected: true</code> و <code>totals.total_shipping</code> يتحدّث</p>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/batch</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p>تنفيذ أكثر من عملية سلة في طلب واحد.</p>
+          <p class="ex-label req">Request body</p>
+<pre>{
+  "requests": [
+    { "path": "/wc/store/v1/cart/add-item", "method": "POST", "body": { "id": 47691, "quantity": 1 } },
+    { "path": "/wc/store/v1/cart/apply-coupon", "method": "POST", "body": { "code": "SAVE10" } }
+  ]
+}</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "responses": [
+    { "status": 201, "body": { "items_count": 1 } },
+    { "status": 200, "body": { "coupons": [{ "code": "save10" }] } }
+  ]
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart checkout">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/checkout</span><span class="auth mix">Nonce</span></div>
+        <div class="card-body">
+          <p>بيانات التشيك أوت. لإنشاء الطلب من الأب استخدم <code>POST /bookapp/v1/checkout</code>.</p>
+          <p class="ex-label res">Response 200 — عناوين + طرق دفع + السلة</p>
+<pre>{
+  "order_id": 0,
+  "status": "",
+  "payment_method": "",
+  "payment_result": { "payment_status": "", "redirect_url": "" },
+  "billing_address": { "first_name": "", "country": "EG" },
+  "shipping_address": { "first_name": "", "country": "EG" }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart checkout">
+        <div class="card-head"><span class="method POST">POST</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/checkout</span><span class="auth mix">Nonce + Cart-Token</span></div>
+        <div class="card-body">
+          <p>ممكن تستخدمه مباشرة. للدفع أونلاين من الأب الأفضل <code>bookapp/v1/checkout</code> عشان رجوع EasyKash. الرد زي Store checkout من غير <code>app_payment</code>.</p>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "order_id": 12345,
+  "status": "checkout-draft",
+  "payment_method": "cod",
+  "payment_result": { "payment_status": "success", "redirect_url": "" }
+}</pre>
+        </div>
+      </article>
+
+      <article class="card" data-tags="store cart">
+        <div class="card-head"><span class="method GET">GET</span><span class="path">https://books.ay7aaga.com/wp-json/wc/store/v1/order/{id}</span><span class="auth mix">بعد الطلب</span></div>
+        <div class="card-body">
+          <p>طلب بعد الإنشاء (جلسة السلة). لقائمة طلباتي استخدم <code>bookapp/v1/orders</code>.</p>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "id": 12345,
+  "status": "processing",
+  "total": "95",
+  "currency_code": "EGP",
+  "billing_address": { "first_name": "محمد", "email": "a@b.com" },
+  "line_items": [{ "id": 47691, "name": "رواية العشيقة الذهبية...", "quantity": 1 }]
+}</pre>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      الموقع: books.ay7aaga.com — العملة EGP — بلاجن BookApp Mobile API (bookapp-mobile-api) v1.0.8
+    </div>
+  </footer>
+
+  <script>
+    const q = document.getElementById("q");
+    const chips = document.querySelectorAll(".chip");
+    let filter = "all";
+
+    function apply() {
+      const term = q.value.trim().toLowerCase();
+      document.querySelectorAll("article.card").forEach((card) => {
+        const hay = (card.dataset.tags + " " + card.innerText).toLowerCase();
+        const okFilter = filter === "all" || hay.includes(filter) || (card.dataset.tags || "").includes(filter);
+        const okSearch = !term || hay.includes(term);
+        card.classList.toggle("hidden", !(okFilter && okSearch));
+      });
+    }
+
+    q.addEventListener("input", apply);
+    chips.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        chips.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        filter = btn.dataset.filter;
+        apply();
+      });
+    });
+  </script>
+</body>
+</html>

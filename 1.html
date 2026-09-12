@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أفاتار المؤلف ثلاثي الأبعاد - كود استاتيكي</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Arabic Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@700;800&family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #0b1120;
+      color: #f8fafc;
+    }
+
+    /* ====================================================
+       1. حاوية الأفاتار الأساسية
+       ==================================================== */
+    .avatar-3d-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 0 auto;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #1e293b;
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-3d-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    
+
+    /* ====================================================
+       3. تأثير حروف "ن ف" المنحوتة من نفس خامة التمثال (بنفسجي مطفي)
+       ==================================================== */
+    
+       
+
+
+
+
+       .text-3d-brand {
+    position: absolute;
+    top: 41%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Baloo Bhaijaan 2', 'Cairo', sans-serif;
+    font-size: 75px;
+    font-weight: 800;
+    line-height: 1.5;
+    padding: 0.2em 0.15em;
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: 10px;
+    margin-left: 10px;
+    background: linear-gradient(180deg, #8fbde4 0%, #5f93c4 38%, #4374a8 68%, #2f5885 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    text-shadow: -4px 4px 7px black;
+    color: #4374a8;
+}
+
+
+
+
+
+
+
+  </style>
+</head>
+<body class="min-h-screen p-6 flex flex-col justify-between">
+
+  
+
+  <main class="max-w-lg mx-auto w-full flex-grow">
+    
+    <div class="avatar-3d-container border border-sky-900/40">
+        <img 
+          src="https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-author.png" 
+          alt="Author Avatar" 
+          class="avatar-3d-image"
+        >
+        <!-- النص المجسم 3D -->
+        <div class="text-3d-brand">ن ف</div>
+      </div>
+
+
+  </main>
+
+
+</body>
+</html>

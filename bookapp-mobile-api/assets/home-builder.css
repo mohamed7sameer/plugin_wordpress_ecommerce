@@ -1,0 +1,97 @@
+.bookapp-builder-banners {
+  background: #fff;
+  border: 1px solid #ccd0d4;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 12px 0 20px;
+  max-width: 900px;
+}
+
+.bookapp-builder-banners ul {
+  margin: 6px 0 0;
+  columns: 2;
+}
+
+.bookapp-comp {
+  background: #fff;
+  border: 1px solid #ccd0d4;
+  border-radius: 6px;
+  margin: 0 0 10px;
+  max-width: 900px;
+}
+
+.bookapp-comp-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+  border-radius: 6px 6px 0 0;
+}
+
+.bookapp-comp-handle {
+  cursor: move;
+  color: #787c82;
+}
+
+.bookapp-comp-title {
+  color: #787c82;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.bookapp-comp-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.bookapp-comp-body {
+  padding: 12px 16px;
+}
+
+.bookapp-comp-closed .bookapp-comp-body {
+  display: none;
+}
+
+.bookapp-comp-disabled {
+  opacity: 0.55;
+}
+
+.bookapp-comp-placeholder {
+  border: 2px dashed #2271b1;
+  border-radius: 6px;
+  margin: 0 0 10px;
+  background: #f0f6fc;
+  max-width: 900px;
+}
+
+.bookapp-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bookapp-field > label {
+  min-width: 190px;
+  padding-top: 4px;
+  font-weight: 600;
+}
+
+.bookapp-field .description {
+  flex-basis: 100%;
+  margin-inline-start: 200px;
+  color: #787c82;
+}
+
+.bookapp-builder-add {
+  margin: 14px 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

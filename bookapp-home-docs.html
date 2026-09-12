@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BookApp — Home API (الهوم الجديدة)</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #fff;
+      --ink: #122033;
+      --muted: #5b6b7c;
+      --line: #e4e9ef;
+      --blue: #1d4ed8;
+      --blue-soft: #e8eefc;
+      --get: #0f766e;
+      --shadow: 0 10px 30px rgba(18, 32, 51, .06);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font: 16px/1.7 "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    header {
+      background: #0f2744;
+      color: #fff;
+      padding: 28px 20px 22px;
+    }
+    header .wrap, main, footer .wrap { max-width: 1080px; margin: 0 auto; }
+    header h1 { margin: 0 0 6px; font-size: 28px; }
+    header p { margin: 0; color: #c9d6e6; }
+    .base {
+      display: inline-block;
+      margin-top: 14px;
+      background: #16355a;
+      color: #dbeafe;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      direction: ltr;
+    }
+    main { padding: 0 20px; }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 20px 0;
+      box-shadow: var(--shadow);
+    }
+    nav.toc a { color: var(--blue); text-decoration: none; }
+    nav.toc ul { margin: 8px 0 0; padding-right: 18px; }
+    section { margin: 28px 0 40px; }
+    h2 { margin: 0 0 8px; font-size: 22px; }
+    h3 { margin: 18px 0 8px; font-size: 17px; }
+    .lead { color: var(--muted); margin: 0 0 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      margin: 12px 0;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+    .method {
+      font: 700 12px/1 Consolas, monospace;
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 6px;
+      min-width: 64px;
+      text-align: center;
+    }
+    .GET { background: var(--get); }
+    .path {
+      font-family: Consolas, "Courier New", monospace;
+      direction: ltr;
+      text-align: left;
+      flex: 1;
+      word-break: break-all;
+    }
+    .auth {
+      font-size: 12px;
+      background: var(--blue-soft);
+      color: #1e3a8a;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+    .auth.guest { background: #ecfdf3; color: #166534; }
+    .comp-tag {
+      font: 700 13px/1 Consolas, monospace;
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 5px 10px;
+      border-radius: 6px;
+      direction: ltr;
+    }
+    .card-body { padding: 14px; }
+    .card-body p { margin: 0 0 10px; }
+    pre, code {
+      font-family: Consolas, "Courier New", monospace;
+      direction: ltr;
+      text-align: left;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 10px;
+      overflow: auto;
+      font-size: 13px;
+      margin: 8px 0 0;
+    }
+    .ex-label {
+      margin: 14px 0 0;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+    .ex-label.req { color: #1d4ed8; }
+    .ex-label.res { color: #0f766e; }
+    .card-body > .ex-label:first-child { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: right; vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 13px; }
+    .note {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 12px 0;
+    }
+    .warn {
+      background: #fde8e8;
+      border: 1px solid #f5b5b5;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 12px 0;
+      color: #7f1d1d;
+    }
+    footer { padding: 24px 20px 40px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>BookApp — Home API</h1>
+      <p>توثيق شاشة الهوم الجديدة (كومبوننتس) للأب — كل اللي مبرمج الموبايل محتاجه لرسم الهوم. آخر تحديث: 11 سبتمبر 2026.</p>
+      <div class="base">GET https://books.ay7aaga.com/wp-json/bookapp/v2/home</div>
+    </div>
+  </header>
+
+  <main>
+    <nav class="toc">
+      <strong>الأقسام</strong>
+      <ul>
+        <li><a href="#overview">نظرة عامة</a></li>
+        <li><a href="#request">الطلب — Endpoint والهيدرز</a></li>
+        <li><a href="#envelope">شكل الرد وقواعده</a></li>
+        <li><a href="#components">أنواع الكومبوننتس الخمسة</a></li>
+        <li><a href="#actions">الأكشنز — actionType / actionTarget</a></li>
+        <li><a href="#product-card">كارت المنتج</a></li>
+        <li><a href="#dashboard">الإدارة من الداشبورد</a></li>
+        <li><a href="#full-example">مثال رد كامل</a></li>
+      </ul>
+    </nav>
+
+    <section id="overview">
+      <h2>نظرة عامة</h2>
+      <p class="lead">الهوم عبارة عن <strong>مصفوفة كومبوننتس مرتبة</strong>. الأب يلفّ على المصفوفة ويرسم كل عنصر حسب نوعه بنفس الترتيب — مفيش هيكل ثابت.</p>
+      <ul>
+        <li>كل عنصر شكله: <code>{ "component": "النوع", "data": { ... } }</code>.</li>
+        <li>الأنواع الحالية 5: <code>announcement</code> · <code>banners</code> · <code>component_ids</code> · <code>products_section</code> · <code>call_to_action</code>.</li>
+        <li>نفس النوع ممكن يتكرر أكتر من مرة (مثلًا 3 سلايدرز منتجات ورا بعض بإعدادات مختلفة).</li>
+        <li>كل الداتا بترجع <strong>جاهزة (resolved)</strong>: البنرات بصورها، التصنيفات بأساميها وصورها وعدد كتبها، والمنتجات كروت كاملة — الهوم بترسم بطلب واحد من غير طلبات إضافية.</li>
+        <li>الترتيب والإضافة والحذف والتفعيل كله من ووردبريس → <strong>BookApp → Home Builder</strong> (شوف قسم الإدارة تحت).</li>
+      </ul>
+      <div class="warn"><strong>⚠️ الهوم القديمة</strong> <code>GET /wp-json/bookapp/v1/home</code> (هيكل ثابت: hero / highlights / sections...) لسه شغالة لكنها هتتشال بعد اعتماد النسخة دي. متبنيش عليها أي شاشة جديدة — ابني على <code>bookapp/v2/home</code> بس.</div>
+    </section>
+
+    <section id="request">
+      <h2>الطلب</h2>
+      <article class="card">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v2/home</span>
+          <span class="auth guest">عام — من غير توكن</span>
+        </div>
+        <div class="card-body">
+          <table>
+            <tr><th>باراميتر / هيدر</th><th>القيمة</th><th>ملاحظات</th></tr>
+            <tr><td dir="ltr"><code>?lang=</code></td><td dir="ltr"><code>ar</code> | <code>en</code></td><td>لغة النصوص (العناوين، الأزرار، الإعلان...). لو مش مبعوتة بيتقرأ <code>Accept-Language</code>، والافتراضي عربي. لو الترجمة الإنجليزية فاضية بيرجع النص العربي بدلها.</td></tr>
+            <tr><td dir="ltr"><code>X-BookApp-Guest</code></td><td>توكن الزائر من <code>/bootstrap</code></td><td>اختياري — عشان <code>in_wishlist</code> / <code>in_compare</code> على كروت المنتجات تطلع صح للزائر.</td></tr>
+            <tr><td dir="ltr"><code>Authorization: Bearer ...</code></td><td>JWT بعد تسجيل الدخول</td><td>اختياري — نفس الغرض لكن للمستخدم المسجّل. من غير الاتنين الفلاجز بترجع <code>false</code>.</td></tr>
+          </table>
+          <p class="ex-label req">Request</p>
+          <pre>GET https://books.ay7aaga.com/wp-json/bookapp/v2/home?lang=ar
+Accept: application/json
+X-BookApp-Guest: 7fdc07f3-1fe2-44d7-86ef-d4b6c944f5a4</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="envelope">
+      <h2>شكل الرد وقواعده</h2>
+      <article class="card">
+        <div class="card-body">
+          <p class="ex-label res">Response 200 — الغلاف</p>
+<pre>{
+  "lang": "ar",
+  "components": [
+    { "component": "announcement",     "data": { ... } },
+    { "component": "banners",          "data": { ... } },
+    { "component": "component_ids",    "data": { ... } },
+    { "component": "products_section", "data": { ... } },
+    { "component": "call_to_action",   "data": { ... } }
+  ]
+}</pre>
+          <h3>قواعد للأب</h3>
+          <ul>
+            <li><strong>الترتيب ملزم:</strong> ارسم الكومبوننتس بنفس ترتيب المصفوفة.</li>
+            <li><strong>الكومبوننت المعطّل من الداشبورد مش بيرجع أصلًا</strong> — مفيش حقل enabled في الرد.</li>
+            <li><strong>«مخفي من التطبيق»:</strong> المنتجات والتصنيفات/الوسوم/المؤلفين/دور النشر المتعلّم عليها «مخفي» في ووردبريس بتتشال من الرد تلقائيًا — سيكشن منتجات مرتبط بتيرم مخفي بيختفي كله.</li>
+            <li><strong>نوع مش معروف؟ تجاهله.</strong> ممكن نضيف أنواع جديدة في المستقبل — الأب اللي قديم يعدّيها من غير ما يقع (forward compatibility).</li>
+            <li><strong>مصفوفة فاضية</strong> (<code>items</code> / <code>products</code> / <code>banners</code>) = متعرضش السيكشن ده أصلًا.</li>
+            <li>الـ IDs في الأكشنز بترجع <strong>نص</strong> (<code>"198"</code>)، والـ <code>ids</code> جوه <code>component_ids</code> و <code>banner_ids</code> بترجع <strong>أرقام</strong>.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section id="components">
+      <h2>أنواع الكومبوننتس الخمسة</h2>
+      <p class="lead">كل الأمثلة اللي تحت دي ردود حقيقية من الموقع (مقصّرة في المصفوفات الطويلة بس).</p>
+
+      <!-- 1) announcement -->
+      <article class="card">
+        <div class="card-head">
+          <span class="comp-tag">announcement</span>
+          <span>شريط إعلان أعلى الشاشة</span>
+        </div>
+        <div class="card-body">
+          <table>
+            <tr><th>حقل</th><th>النوع</th><th>الوصف</th></tr>
+            <tr><td dir="ltr"><code>text</code></td><td>نص</td><td>نص الإعلان حسب اللغة</td></tr>
+            <tr><td dir="ltr"><code>actionType</code></td><td>نص</td><td>نوع الأكشن عند الضغط — شوف <a href="#actions">قسم الأكشنز</a>. فاضي = الشريط مش قابل للضغط</td></tr>
+            <tr><td dir="ltr"><code>actionTarget</code></td><td>نص</td><td>الـ ID الهدف، أو الرابط الكامل لو <code>actionType=url</code></td></tr>
+          </table>
+          <p class="ex-label res">مثال</p>
+<pre>{
+  "component": "announcement",
+  "data": {
+    "text": "يمكنك الدفع أونلاين من خلال فيزا - محفظة - ميزة كما يمكنك التقسيط من خلال البنك الأهلي 6 و 12 شهر ومن خلال فاليو وسهولة",
+    "actionType": "category",
+    "actionTarget": "198"
+  }
+}</pre>
+        </div>
+      </article>
+
+      <!-- 2) banners -->
+      <article class="card">
+        <div class="card-head">
+          <span class="comp-tag">banners</span>
+          <span>سلايدر بنرات (صور بعناوين وأكشن)</span>
+        </div>
+        <div class="card-body">
+          <p>البنرات بتتدار من الداشبورد كـ Custom Post Type (ووردبريس → BookApp → <strong>البنرات</strong>): لكل بنر عنوان ووصف عربي/إنجليزي + صورة + أكشن. الكومبوننت بيرجع البنرات <strong>المنشورة بس</strong>.</p>
+          <table>
+            <tr><th>حقل</th><th>النوع</th><th>الوصف</th></tr>
+            <tr><td dir="ltr"><code>banner_ids</code></td><td>أرقام []</td><td>الإعداد المكتوب في الداشبورد. البنرات بترجع <strong>بنفس ترتيبه</strong>. لو فاضي → كل البنرات المنشورة (الأحدث أولًا)</td></tr>
+            <tr><td dir="ltr"><code>banners[].id</code></td><td>رقم</td><td>ID البنر</td></tr>
+            <tr><td dir="ltr"><code>banners[].title</code> / <code>subtitle</code></td><td>نص</td><td>حسب اللغة — ممكن <code>subtitle</code> يبقى فاضي</td></tr>
+            <tr><td dir="ltr"><code>banners[].imageUrl</code></td><td>نص</td><td>رابط الصورة (الحجم الكامل). ممكن يبقى فاضي لو البنر من غير صورة</td></tr>
+            <tr><td dir="ltr"><code>banners[].actionType</code> / <code>actionTarget</code></td><td>نص</td><td>أكشن الضغط على البنر — فاضي = عرض بس من غير ضغط</td></tr>
+          </table>
+          <p class="ex-label res">مثال</p>
+<pre>{
+  "component": "banners",
+  "data": {
+    "banner_ids": [],
+    "banners": [
+      {
+        "id": 48206,
+        "title": "أي حاجة لبيع الكتب الورقية",
+        "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+        "imageUrl": "https://books.ay7aaga.com/wp-content/uploads/2025/02/البيت-الابيض-في-عهد-ترامب.jpg",
+        "actionType": "category",
+        "actionTarget": "198"
+      },
+      {
+        "id": 48207,
+        "title": "تخفيضات متجر كتب اي حاجة",
+        "subtitle": "",
+        "imageUrl": "https://books.ay7aaga.com/wp-content/uploads/2025/06/Purple-Yellow-Modern-Memphis-Financial-Tips-Carousel-Instagram-Post-15.jpg",
+        "actionType": "tag",
+        "actionTarget": ""
+      }
+    ]
+  }
+}</pre>
+        </div>
+      </article>
+
+      <!-- 3) component_ids -->
+      <article class="card">
+        <div class="card-head">
+          <span class="comp-tag">component_ids</span>
+          <span>كروت عناصر بالـ IDs — تصنيفات / مؤلفين / دور نشر / وسوم / منتجات مختارة</span>
+        </div>
+        <div class="card-body">
+          <p>سيكشن عام: الأدمن بيختار نوع العناصر (<code>actionType</code>) ويكتب الـ IDs، والـ API بيرجعها كروت جاهزة في <code>items</code>. شكل العنصر بيختلف حسب النوع:</p>
+          <table>
+            <tr><th dir="ltr">actionType</th><th>شكل العنصر في <code>items</code></th></tr>
+            <tr><td dir="ltr"><code>category</code></td><td dir="ltr"><code>{ id, name, count, image, parent }</code></td></tr>
+            <tr><td dir="ltr"><code>tag</code></td><td dir="ltr"><code>{ id, name, count, image }</code></td></tr>
+            <tr><td dir="ltr"><code>author</code></td><td dir="ltr"><code>{ id, name, count, image, bio? }</code></td></tr>
+            <tr><td dir="ltr"><code>publisher</code></td><td dir="ltr"><code>{ id, name, count, image }</code></td></tr>
+            <tr><td dir="ltr"><code>product</code></td><td>كروت منتجات كاملة — نفس <a href="#product-card">كارت المنتج</a> (سيكشن «منتجات مختارة يدويًا»)</td></tr>
+          </table>
+          <h3>قواعد</h3>
+          <ul>
+            <li><code>count</code> = عدد الكتب جوه التصنيف / للمؤلف / للدار.</li>
+            <li><code>image</code>: صورة الترم لو متسجلة في ووكومرس، وإلا <code>default_image</code> بتاعة السيكشن، وإلا <code>null</code>. مفيش صورة افتراضية عامة للمؤلف أو الدار.</li>
+            <li>لو <code>actionType=category</code> والأدمن ساب الـ <code>ids</code> فاضية → بيرجع <strong>كل التصنيفات الرئيسية</strong> (parent categories) تلقائيًا.</li>
+            <li><code>bio</code> (للمؤلف بس): وصف الترم — <strong>HTML وممكن يكون طويل جدًا</strong> (مقالات SEO). لو هتعرضه اعمل strip للـ HTML وقصّه (سطرين مثلًا)، أو تجاهله خالص. مش بيرجع لو فاضي.</li>
+            <li><code>parent</code> (للتصنيف بس): <code>0</code> يعني تصنيف رئيسي.</li>
+          </ul>
+          <p class="ex-label res">مثال — تصنيفات</p>
+<pre>{
+  "component": "component_ids",
+  "data": {
+    "title": "تصفح حسب التصنيف",
+    "button_text": "عرض الكل",
+    "actionType": "category",
+    "ids": [187, 198, 197],
+    "default_image": "https://books.ay7aaga.com/wp-content/uploads/2024/04/مكتبة-أي-حاجة-في-سور-الازبكية.jpg",
+    "items": [
+      { "id": 187, "name": "سور الأزبكية",    "count": 5327, "image": "https://books.ay7aaga.com/wp-content/uploads/2024/04/مكتبة-أي-حاجة-في-سور-الازبكية-400x266.jpg", "parent": 0 },
+      { "id": 198, "name": "إصدارات حديثة",   "count": 1684, "image": "https://books.ay7aaga.com/wp-content/uploads/2024/04/مكتبة-أي-حاجة-في-سور-الازبكية.jpg", "parent": 0 },
+      { "id": 197, "name": "كتب قديمة ونادرة", "count": 151,  "image": "https://books.ay7aaga.com/wp-content/uploads/2024/04/كتب-قديمة-جدا-كتب-نادرة-وقديمة-225x300.jpg", "parent": 0 }
+    ]
+  }
+}</pre>
+          <p class="ex-label res">مثال — مؤلفين</p>
+<pre>{
+  "component": "component_ids",
+  "data": {
+    "title": "مليون اسم واسم",
+    "button_text": "عرض الكل",
+    "actionType": "author",
+    "ids": [4132, 2305, 2489, 364, 332, 693],
+    "default_image": "",
+    "items": [
+      {
+        "id": 4132,
+        "name": "نبيل فاروق",
+        "count": 213,
+        "image": "https://books.ay7aaga.com/wp-content/uploads/2026/09/نبيل_فاروق.jpg",
+        "bio": "<p>...نبذة HTML طويلة — اعمل strip وقصّها أو تجاهلها...</p>"
+      },
+      {
+        "id": 2305,
+        "name": "نجيب محفوظ",
+        "count": 29,
+        "image": null,
+        "bio": "<p>...</p>"
+      }
+    ]
+  }
+}</pre>
+        </div>
+      </article>
+
+      <!-- 4) products_section -->
+      <article class="card">
+        <div class="card-head">
+          <span class="comp-tag">products_section</span>
+          <span>سلايدر منتجات — من مصدر + ترتيب</span>
+        </div>
+        <div class="card-body">
+          <table>
+            <tr><th>حقل</th><th>النوع</th><th>الوصف</th></tr>
+            <tr><td dir="ltr"><code>title</code> / <code>button_text</code></td><td>نص</td><td>عنوان السيكشن ونص زرار «عرض الكل» حسب اللغة</td></tr>
+            <tr><td dir="ltr"><code>sort_by</code></td><td>نص</td><td>ترتيب المنتجات — القيم في الجدول تحت</td></tr>
+            <tr><td dir="ltr"><code>action_type</code></td><td>نص</td><td>مصدر المنتجات + هدف زرار «عرض الكل»</td></tr>
+            <tr><td dir="ltr"><code>action_target</code></td><td>نص</td><td>ID الترم / المنتج — فاضي مع <code>all</code> / <code>sale</code> / <code>featured</code></td></tr>
+            <tr><td dir="ltr"><code>limit</code></td><td>رقم</td><td>عدد المنتجات (1–24، الافتراضي 10)</td></tr>
+            <tr><td dir="ltr"><code>products</code></td><td>[]</td><td>كروت منتجات كاملة — شوف <a href="#product-card">كارت المنتج</a>. متوفرة في المخزون بس</td></tr>
+          </table>
+          <h3>قيم action_type (المصدر)</h3>
+          <table>
+            <tr><th dir="ltr">القيمة</th><th>المنتجات اللي بترجع</th></tr>
+            <tr><td dir="ltr"><code>all</code></td><td>كل المتجر (بالترتيب المختار)</td></tr>
+            <tr><td dir="ltr"><code>sale</code></td><td>المنتجات المخفّضة</td></tr>
+            <tr><td dir="ltr"><code>featured</code></td><td>المنتجات المميزة (⭐ في ووكومرس)</td></tr>
+            <tr><td dir="ltr"><code>category</code> / <code>tag</code> / <code>author</code> / <code>publisher</code></td><td>منتجات الترم اللي في <code>action_target</code></td></tr>
+            <tr><td dir="ltr"><code>product</code></td><td>منتج واحد بعينه (الـ ID في <code>action_target</code>)</td></tr>
+          </table>
+          <h3>قيم sort_by</h3>
+          <table>
+            <tr><th dir="ltr">القيمة</th><th>الترتيب</th></tr>
+            <tr><td dir="ltr"><code>newest</code></td><td>الأحدث أولًا (الافتراضي)</td></tr>
+            <tr><td dir="ltr"><code>oldest</code></td><td>الأقدم أولًا</td></tr>
+            <tr><td dir="ltr"><code>best_selling</code></td><td>الأكثر مبيعًا</td></tr>
+            <tr><td dir="ltr"><code>price_low_to_high</code></td><td>السعر تصاعدي</td></tr>
+            <tr><td dir="ltr"><code>price_high_to_low</code></td><td>السعر تنازلي</td></tr>
+          </table>
+          <p class="ex-label res">مثال — سيكشن التخفيضات (المنتجات مقصّرة لمنتج واحد)</p>
+<pre>{
+  "component": "products_section",
+  "data": {
+    "title": "تخفيضات متجر كتب اي حاجة",
+    "button_text": "عرض الكل",
+    "sort_by": "newest",
+    "action_type": "sale",
+    "action_target": "",
+    "limit": 10,
+    "products": [
+      { "id": 47691, "name": "رواية العشيقة الذهبية ...", "on_sale": true, "...": "كارت منتج كامل — شوف القسم التالي" }
+    ]
+  }
+}</pre>
+          <p>زرار «عرض الكل»: افتح شاشة اللستة بنفس <code>action_type</code> / <code>action_target</code> (مثلًا <code>sale</code> → شاشة كل المخفّض، <code>category:198</code> → شاشة التصنيف 198).</p>
+        </div>
+      </article>
+
+      <!-- 5) call_to_action -->
+      <article class="card">
+        <div class="card-head">
+          <span class="comp-tag">call_to_action</span>
+          <span>بلوك دعوة لإجراء — عنوان + وصف + زرار</span>
+        </div>
+        <div class="card-body">
+          <table>
+            <tr><th>حقل</th><th>النوع</th><th>الوصف</th></tr>
+            <tr><td dir="ltr"><code>title</code> / <code>subtitle</code></td><td>نص</td><td>حسب اللغة</td></tr>
+            <tr><td dir="ltr"><code>button_text</code></td><td>نص</td><td>نص الزرار</td></tr>
+            <tr><td dir="ltr"><code>actionType</code> / <code>actionTarget</code></td><td>نص</td><td>أكشن الزرار — شوف <a href="#actions">قسم الأكشنز</a></td></tr>
+          </table>
+          <p class="ex-label res">مثال</p>
+<pre>{
+  "component": "call_to_action",
+  "data": {
+    "title": "أي حاجة لبيع الكتب الورقية",
+    "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+    "button_text": "عرض الكل",
+    "actionType": "category",
+    "actionTarget": "198"
+  }
+}</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="actions">
+      <h2>الأكشنز — actionType / actionTarget</h2>
+      <p class="lead">نفس المنطق في كل الكومبوننتس: لما المستخدم يدوس (على البنر / الإعلان / زرار الـ CTA / كارت عنصر)، الأب يفتح الشاشة دي:</p>
+      <article class="card">
+        <div class="card-body">
+          <table>
+            <tr><th dir="ltr">actionType</th><th dir="ltr">actionTarget</th><th>الأب يفتح</th></tr>
+            <tr><td dir="ltr"><code>category</code></td><td>ID تصنيف</td><td>شاشة منتجات التصنيف (فلتر <code>product_cat</code>)</td></tr>
+            <tr><td dir="ltr"><code>tag</code></td><td>ID وسم</td><td>شاشة منتجات الوسم (فلتر <code>product_tag</code>)</td></tr>
+            <tr><td dir="ltr"><code>product</code></td><td>ID منتج</td><td>صفحة المنتج</td></tr>
+            <tr><td dir="ltr"><code>author</code></td><td>ID مؤلف</td><td>شاشة منتجات المؤلف (فلتر <code>pa_writer</code>)</td></tr>
+            <tr><td dir="ltr"><code>publisher</code></td><td>ID دار نشر</td><td>شاشة منتجات الدار (فلتر <code>pa_publisher</code>)</td></tr>
+            <tr><td dir="ltr"><code>url</code></td><td>رابط كامل <code>https://...</code></td><td>افتح الرابط في المتصفح / WebView — متاح في الإعلان والبنر والـ CTA بس</td></tr>
+            <tr><td dir="ltr">فاضي <code>""</code></td><td>—</td><td>مفيش أكشن — العنصر للعرض بس</td></tr>
+          </table>
+          <div class="note">
+            <strong>ملاحظات:</strong> الـ <code>actionTarget</code> بيرجع <strong>نص</strong>. لو النوع ID (<code>"198"</code>) حوّله رقم عندك. لو <code>actionType=url</code> خليه رابط وافتحه زي ما هو. لو <code>actionType</code> ليه قيمة و<code>actionTarget</code> فاضي، اعتبره «مفيش أكشن» برضه. في <code>component_ids</code> الضغط على أي كارت بيفتح نفس نوع الشاشة بالـ <code>id</code> بتاع الكارت نفسه، وفي <code>products_section</code> القيم الإضافية (<code>all</code> / <code>sale</code> / <code>featured</code>) بتفتح شاشة اللستة بالفلتر المقابل.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section id="product-card">
+      <h2>كارت المنتج</h2>
+      <p class="lead">نفس شكل كارت المنتج في باقي الـ API (المفضلة، المقارنة، الهوم القديمة). ده مثال حقيقي كامل:</p>
+      <article class="card">
+        <div class="card-body">
+<pre>{
+  "id": 47691,
+  "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+  "slug": "%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-...",
+  "permalink": "https://books.ay7aaga.com/product/...",
+  "sku": "M794",
+  "type": "simple",
+  "short_description": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+  "description": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+  "on_sale": true,
+  "is_in_stock": true,
+  "is_purchasable": true,
+  "stock_status": "instock",
+  "average_rating": 0,
+  "review_count": 0,
+  "prices": {
+    "price": "45",
+    "regular_price": "50",
+    "sale_price": "45",
+    "currency_code": "EGP",
+    "currency_symbol": "EGP",
+    "currency_minor_unit": 0
+  },
+  "images": [
+    {
+      "id": 47694,
+      "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-...-700x933.jpg",
+      "alt": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير"
+    }
+  ],
+  "categories": [
+    { "id": 232, "name": "روايات", "slug": "..." },
+    { "id": 187, "name": "سور الأزبكية", "slug": "..." }
+  ],
+  "attributes": [
+    {
+      "id": "pa_publisher",
+      "name": "الناشر",
+      "options": [ { "id": 5537, "name": "دار النحاس", "slug": "...", "image": null } ]
+    },
+    {
+      "id": "pa_writer",
+      "name": "المؤلف",
+      "options": [ { "id": 3277, "name": "انجيلا توماس", "slug": "...", "image": null } ]
+    },
+    {
+      "id": "pa_size",
+      "name": "الحجم",
+      "options": [ { "id": 3630, "name": "صغير", "slug": "..." } ]
+    }
+  ],
+  "in_wishlist": false,
+  "in_compare": false
+}</pre>
+          <h3>أهم الحقول للأب</h3>
+          <table>
+            <tr><th>حقل</th><th>ملاحظات</th></tr>
+            <tr><td dir="ltr"><code>prices</code></td><td>كل القيم نصوص. <code>sale_price</code> فاضي = مفيش خصم. <code>currency_minor_unit: 0</code> = جنيه من غير كسور</td></tr>
+            <tr><td dir="ltr"><code>on_sale</code> + <code>regular_price</code></td><td>لعرض السعر القديم مشطوب جنب الجديد</td></tr>
+            <tr><td dir="ltr"><code>images[0].src</code></td><td>صورة الكارت — أول صورة هي الرئيسية</td></tr>
+            <tr><td dir="ltr"><code>attributes</code></td><td>المؤلف (<code>pa_writer</code>) والناشر (<code>pa_publisher</code>) بييجوا هنا مع صورهم — استخدمهم لسطر «المؤلف: ...» على الكارت والضغط عليه يفتح شاشة المؤلف</td></tr>
+            <tr><td dir="ltr"><code>in_wishlist</code> / <code>in_compare</code></td><td>حسب <code>X-BookApp-Guest</code> أو الـ JWT المبعوت — لتلوين قلب المفضلة وأيقونة المقارنة</td></tr>
+            <tr><td dir="ltr"><code>is_in_stock</code></td><td>الهوم أصلًا مش بترجع غير المتوفر، فده هيكون دايمًا <code>true</code> هنا</td></tr>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="dashboard">
+      <h2>الإدارة من الداشبورد (للأدمن)</h2>
+      <article class="card">
+        <div class="card-body">
+          <table>
+            <tr><th>الصفحة</th><th>بتعمل إيه</th></tr>
+            <tr><td>ووردبريس → BookApp → <strong>Home Builder</strong></td><td>ترتيب الهوم: إضافة كومبوننت من الدروب داون، سحب من المقبض لإعادة الترتيب، تشيك بوكس «ظاهر» للتفعيل/التعطيل، زرار «مسح»، وكل التعديلات بتتثبت بزرار «حفظ الهوم الجديدة». فوق الصفحة لستة بالبنرات المتاحة وأرقامها</td></tr>
+            <tr><td>ووردبريس → BookApp → <strong>البنرات</strong></td><td>إضافة/تعديل البنرات: العنوان (عربي) + العنوان الإنجليزي + الوصف بالعربي والإنجليزي + صورة البنر (Featured Image) + actionType/actionTarget. الـ ID ظاهر في عمود في الجدول وفي صندوق جانبي جوه صفحة التعديل. <strong>البنر لازم يكون منشور</strong> عشان يظهر</td></tr>
+          </table>
+          <div class="note">بعد أي تعديل لو الرد في الأب لسه قديم: امسح الكاش (WP-Optimize) وجرّب تاني. صفحة إعدادات BookApp القديمة لسه موجودة لكنها بتتحكم في الهوم القديمة بس.</div>
+        </div>
+      </article>
+    </section>
+
+    <section id="full-example">
+      <h2>مثال رد كامل (مقصّر)</h2>
+      <article class="card">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v2/home?lang=ar</span>
+          <span class="auth guest">عام</span>
+        </div>
+        <div class="card-body">
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "lang": "ar",
+  "components": [
+    {
+      "component": "announcement",
+      "data": {
+        "text": "يمكنك الدفع أونلاين من خلال فيزا - محفظة - ميزة كما يمكنك التقسيط من خلال البنك الأهلي 6 و 12 شهر ومن خلال فاليو وسهولة",
+        "actionType": "category",
+        "actionTarget": "198"
+      }
+    },
+    {
+      "component": "banners",
+      "data": {
+        "banner_ids": [],
+        "banners": [
+          {
+            "id": 48206,
+            "title": "أي حاجة لبيع الكتب الورقية",
+            "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+            "imageUrl": "https://books.ay7aaga.com/wp-content/uploads/2025/02/البيت-الابيض-في-عهد-ترامب.jpg",
+            "actionType": "category",
+            "actionTarget": "198"
+          }
+        ]
+      }
+    },
+    {
+      "component": "component_ids",
+      "data": {
+        "title": "تصفح حسب التصنيف",
+        "button_text": "عرض الكل",
+        "actionType": "category",
+        "ids": [187, 198, 197],
+        "default_image": "https://books.ay7aaga.com/wp-content/uploads/2024/04/مكتبة-أي-حاجة-في-سور-الازبكية.jpg",
+        "items": [
+          { "id": 187, "name": "سور الأزبكية", "count": 5327, "image": "https://...jpg", "parent": 0 }
+        ]
+      }
+    },
+    {
+      "component": "products_section",
+      "data": {
+        "title": "تخفيضات متجر كتب اي حاجة",
+        "button_text": "عرض الكل",
+        "sort_by": "newest",
+        "action_type": "sale",
+        "action_target": "",
+        "limit": 10,
+        "products": [ { "id": 47691, "name": "...", "on_sale": true, "prices": { "price": "45", "regular_price": "50", "sale_price": "45", "currency_code": "EGP", "currency_symbol": "EGP", "currency_minor_unit": 0 }, "in_wishlist": false, "in_compare": false, "...": "..." } ]
+      }
+    },
+    {
+      "component": "products_section",
+      "data": { "title": "المنتجات المميزة", "action_type": "featured", "...": "..." }
+    },
+    {
+      "component": "products_section",
+      "data": { "title": "إصدارات حديثة", "action_type": "category", "action_target": "198", "...": "..." }
+    },
+    {
+      "component": "component_ids",
+      "data": { "title": "مليون اسم واسم", "actionType": "author", "ids": [4132, 2305, 2489, 364, 332, 693], "...": "..." }
+    },
+    {
+      "component": "call_to_action",
+      "data": {
+        "title": "أي حاجة لبيع الكتب الورقية",
+        "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+        "button_text": "عرض الكل",
+        "actionType": "category",
+        "actionTarget": "198"
+      }
+    }
+  ]
+}</pre>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      BookApp — Home API v2 · التوثيق الكامل لكل الـ endpoints في <code>bookapp-api-docs.html</code> · طلبات جاهزة للتجربة في <code>bookapp-api.http</code> (قسم Home V2)
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,361 @@
+# ProTech — Agent Instructions
+
+Remote WordPress site. This workspace is **not** the WordPress codebase. Do not invent local theme/plugin files.
+
+Inspect and change the live site through the right tool: **WordPress MCP** for content, **cPanel** for hosting, **SSH + WP-CLI** for server/CLI work. Read `credential` for connection details. Never copy those secrets into `AGENTS.md`, commits, chat, WPCode, or MCP config.
+
+- **Site:** https://protech.lbp-support.com
+- **Admin:** https://protech.lbp-support.com/wp-admin/
+- **Docroot:** `/home/lbpsupport/protech.lbp-support.com`
+- **Theme:** Divi (Elegant Themes) — treat as vendor code
+- **Custom code:** WPCode only
+- **Languages:** WPML — English (default) + Arabic (`/ar/`)
+- **Hosting:** cPanel on `lbp-support.com` (not Hostinger WP tools unless the user asks about Hostinger)
+- **Cache:** LiteSpeed Cache plugin (`litespeed-cache`) is active — **purge after every change**
+- **Credentials:** WordPress, cPanel, SSH, and WP-CLI details live only in `credential`
+
+---
+
+## Hard rules
+
+1. Use **WordPress MCP** (`user-wordpress-mcp` from Cursor `mcp.json` → `wordpress-mcp`) for WordPress content read/write (posts, pages, CPTs, media, menus, users, comments, settings that MCP covers). Discover tools first. Do not guess endpoints or invent a local `wp-content` tree.
+2. Use **cPanel MCP** (`user-cpanel` from Cursor `mcp.json` → `cpanel`), **SSH**, and **WP-CLI** when the job needs hosting, files, cache, diagnostics, or CLI that WordPress MCP cannot do. Details are in **Server access** below. Connection secrets are only in `credential` and Cursor `mcp.json`.
+3. **Never edit the Divi theme** — not `Divi/`, not a child theme, not Theme File Editor, not `functions.php`, not template PHP/CSS/JS.
+4. **All custom code** (PHP, CSS, JS, HTML, header/footer scripts) goes in **WPCode – Insert Headers and Footers + Custom Code Snippets**.
+5. The site is **multilingual (WPML)**. Before any change, confirm active languages and the matching EN/AR items. Apply or translate the change in **every** language. Verify both front ends.
+6. Write each change in the right place (table below). Do not dump layout, copy, or CSS into the wrong layer.
+7. Hostinger WordPress MCP is **hosting** (installs, cache, plugins on Hostinger). This site is on **cPanel** (`lbp-support.com`). Do not use Hostinger WP tools unless the user explicitly asks about Hostinger hosting.
+8. **Purge LiteSpeed Cache after every change.** Do not wait to see if the front looks stale. Details in **LiteSpeed Cache** below.
+9. **Update `report.html` after every change.** A site change is unfinished until the report lists that task. Details in **Task report** below.
+
+---
+
+## Cursor MCP servers (required)
+
+This machine already has the live ProTech servers in Cursor `mcp.json` (`C:\Users\Admin\.cursor\mcp.json`). **Use those servers.** Do not invent a second WordPress or cPanel connection, and do not use Hostinger WP tools for this site.
+
+| Job | `mcp.json` key | Cursor namespace | Auth |
+| --- | --- | --- | --- |
+| WordPress content (pages, posts, CPTs, media, users, WPML) | `wordpress-mcp` | `user-wordpress-mcp` | Application Password in `mcp.json` / `credential` |
+| Hosting (files, domains, email, SSL, cron, DB, PHP) | `cpanel` | `user-cpanel` | cPanel API token in `mcp.json` / `credential` |
+
+Site plugin: **WordPress MCP** (`wordpress-mcp-trunk`, Automattic, v0.2.5) — endpoint `/wp-json/wp/v2/wpmcp`. The local proxy is `@automattic/mcp-wordpress-remote`. `WP_API_URL` is the site root (`https://protech.lbp-support.com/`), not the MCP Adapter path.
+
+```json
+"wordpress-mcp": {
+  "command": "npx",
+  "args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
+  "env": {
+    "WP_API_URL": "https://protech.lbp-support.com/",
+    "WP_API_USERNAME": "ezz",
+    "WP_API_PASSWORD": "(Application Password — credential / mcp.json only)",
+    "OAUTH_ENABLED": "false"
+  }
+},
+"cpanel": {
+  "command": "node",
+  "args": ["D:\\MCP\\cPanel-MCP-Server\\build\\index.js"],
+  "env": {
+    "CPANEL_USERNAME": "lbpsupport",
+    "CPANEL_API_TOKEN": "(see credential / mcp.json)",
+    "CPANEL_SERVER_URL": "https://cpanel.lbp-support.com:2083"
+  }
+}
+```
+
+Do not paste the Application Password or cPanel token into this file, chat, WPCode, or git.
+
+## WordPress MCP (required)
+
+Operate the site through **`user-wordpress-mcp`**. Pass `wpml_language` (`en` or `ar`) on tools that support it.
+
+### Every session
+
+1. Discover tools: `GetDynamicTools` namespace `user-wordpress-mcp` (or pattern `wordpress|wp_|wpmcp`).
+2. Read the schema of the tool you will call before calling it.
+3. Prefer MCP over REST-in-the-browser, wp-admin clicking, or invented local files.
+4. If `user-wordpress-mcp` is missing, unauthorized, or has no content tools: call `mcp_auth` once. If it still fails, **stop and tell the user to reload the `wordpress-mcp` server in Cursor**. Do not improvise a parallel workflow.
+
+Typical capabilities (always use the live schema):
+
+- List/get/create/update posts, pages, and custom post types
+- Media, menus, users, comments, categories, tags
+- Site info, plugins, and settings (read before write)
+- WPML language on most content tools (`wpml_language`: `en` / `ar`)
+
+### Safer writes
+
+- Read the current item first. Patch only what you need.
+- After content updates, check the WPML translation of the same item.
+- Do not activate/deactivate plugins, change permalinks, or edit WPML language settings unless the user asked.
+- Do not store Application Passwords or admin passwords in the repo.
+
+---
+
+## Server access — cPanel, SSH, WP-CLI
+
+Use these when WordPress MCP is not enough. Read `credential` for URLs, usernames, tokens, and the SSH host alias. Do not paste secrets here or in chat.
+
+### When to use which
+
+| Need | Use |
+| --- | --- |
+| Pages, posts, CPTs, menus, media, users, comments | WordPress MCP |
+| Hosting: files, domains, email, SSL, cron, databases, PHP, caches at the account level | **cPanel MCP** (`user-cpanel`) |
+| Shell, SFTP, one-off server commands, WP-CLI | **SSH** (`ssh lbpsupport`) |
+| Plugin/theme/core inspect, search-replace, cache flush, language packs, bulk WP ops | **WP-CLI** over SSH |
+
+Prefer the least-destructive layer. Do not SSH-edit Divi theme files or dump custom PHP into the docroot when WPCode can hold it.
+
+### cPanel
+
+- Panel: `https://cpanel.lbp-support.com:2083`
+- Account user: `lbpsupport` (password + API token in `credential`)
+- Cursor MCP: `mcp.json` key `cpanel` → namespace `user-cpanel`. Discover tools (`GetDynamicTools` namespace `user-cpanel`, or pattern `cpanel|ssh|file|cron|php`) and read the schema before calling.
+- MCP env is already in Cursor `mcp.json` (`CPANEL_SERVER_URL=https://cpanel.lbp-support.com:2083`, token named `Cursor-MCP`). If MCP 404s on the public site URL, the server URL is wrong — use the `:2083` host, not `protech.lbp-support.com/cpanel`.
+- Site home: `/home/lbpsupport`
+- ProTech docroot: `/home/lbpsupport/protech.lbp-support.com`
+- After file/CSS/JS/layout changes, purge LiteSpeed (cPanel LiteSpeed cache and/or WP LiteSpeed). Also clear Divi static CSS when the front still looks stale.
+
+### SSH
+
+- Host alias (local `~/.ssh/config`): `ssh lbpsupport` — user `lbpsupport`, host `65.108.37.198`, port `3040`, key `~/.ssh/protech_lbpsupport`
+- Optional alias `ssh protech` starts in the ProTech docroot
+- Shell is enabled (bash). If you see `Shell access is not enabled`, stop and tell the user to enable Jail Shell / bash in **WHM → Manage Shell Access** for `lbpsupport`
+- SFTP works on the same host/port/key even if shell is off
+- Public key is in `/home/lbpsupport/.ssh/authorized_keys` (comment `protech-lbpsupport`)
+
+```bash
+ssh lbpsupport
+# or a one-liner:
+ssh lbpsupport 'cd ~/protech.lbp-support.com && wp plugin list'
+```
+
+### WP-CLI
+
+Already installed on the server (WP Toolkit): `/usr/local/bin/wp` — version 2.12.0.
+
+Project config: `/home/lbpsupport/protech.lbp-support.com/wp-cli.yml` (`path` + `url`). From the docroot you do not need `--path`.
+
+```bash
+ssh lbpsupport
+cd ~/protech.lbp-support.com
+wp --version
+wp core version
+wp plugin list
+wp litespeed-purge all
+```
+
+Do not drop a web-accessible `wp-cli.phar` in the docroot. Do not run destructive WP-CLI (`plugin delete`, `db reset`, `search-replace` on production URLs) unless the user asked.
+
+---
+
+## LiteSpeed Cache — purge after every change
+
+Plugin **LiteSpeed Cache** (`litespeed-cache`) is installed and **active**. The server also runs LiteSpeed. Cached HTML/CSS/JS will hide new work until you purge.
+
+**After every successful change** (Divi content, WPCode snippet, WPML, plugin/setting, file, CSS/JS), purge before you verify the front. A change that is only in the database or admin is unfinished if the public EN/AR pages still show the old cache.
+
+```bash
+ssh lbpsupport 'cd ~/protech.lbp-support.com && wp litespeed-purge all'
+```
+
+- `wp litespeed-purge all` is the required purge (plugin page cache + related LSCache).
+- `wp cache flush` is WordPress object cache only. Use it as extra if needed, **not** instead of `litespeed-purge`.
+- After visual/Divi changes, also clear **Divi static CSS**, then purge LiteSpeed.
+- Then check **English and `/ar/`**. Do not treat an admin preview or a single cached screenshot as done.
+- Do not deactivate or reconfigure LiteSpeed Cache unless the user asked.
+
+---
+
+## Divi — do not touch the theme
+
+Divi stores layouts in the **database** (page/post content + Theme Builder). That is the only Divi surface you may change.
+
+**Never:**
+
+- Edit files under `wp-content/themes/Divi/`
+- Create or edit a child theme unless the user explicitly orders it (default is **no**)
+- Use Appearance → Theme File Editor
+- Override Divi templates (`header.php`, `footer.php`, `functions.php`, module PHP)
+- Change Divi core / Elegant Themes plugin files
+
+**Allowed Divi work (via MCP / wp-admin, not files):**
+
+- Page and CPT content built with Divi Builder
+- Theme Builder layouts (header / footer / body) **and their WPML translations**
+- Divi Library layouts / global modules — update the item and every language copy
+- Module settings, design, and copy inside the builder
+
+Divi extras on this site (do not patch their plugin files): Divi Builder API (`divi/v1`), DiviFlash (`difl/v5`), Divi menu/popup settings. Customize with WPCode hooks/CSS, or their own UI.
+
+After visual changes: clear **Divi static CSS**, then **purge LiteSpeed Cache** (`wp litespeed-purge all`), then check EN + AR.
+
+---
+
+## Custom code = WPCode only
+
+Plugin: **WPCode – Insert Headers and Footers + Custom Code Snippets – WordPress Code Manager**.
+
+Use Code Snippets (or Headers & Footers for site-wide scripts). One concern per snippet. Name snippets so the next agent can find them.
+
+| Need | WPCode type | Insertion |
+| --- | --- | --- |
+| PHP hooks, filters, shortcodes, REST tweaks | PHP Snippet | Auto Insert → Run Everywhere or Front-end only |
+| Layout/visual CSS | CSS Snippet | Auto Insert → Site Wide Header |
+| Behavior in the browser | JavaScript Snippet | Auto Insert → Site Wide Footer (unless it must be in `head`) |
+| Markup / pixels / third-party tags | HTML Snippet | Header or Footer as the vendor requires |
+| Analytics / GTM / chat widgets | Headers & Footers or HTML | Header or Footer |
+
+**Snippet conventions**
+
+- Title: `ProTech — {area} — {what}` e.g. `ProTech — Header — hide WPML banner`
+- Code type must match the content (do not paste CSS into a PHP snippet)
+- Prefer Auto Insert + location over editing Divi Integration
+- Use WPCode conditionals (page, post type, logged-in) instead of huge `if` trees when possible
+- For language-specific CSS/JS, gate on WPML (`ICL_LANGUAGE_CODE` in PHP, `html[lang]`, or `body.rtl` / `/ar/` in CSS). Still keep **one** snippet that covers both languages when the rule is shared
+- Enable Safe Mode / keep a way to disable a broken snippet
+- Never put secrets in snippets
+
+Do **not** add a site-specific custom plugin, mu-plugin, or child-theme file for work that WPCode can hold.
+
+---
+
+## WPML — both languages, always
+
+Confirmed on the live site:
+
+| Language | Code | URL | Direction |
+| --- | --- | --- | --- |
+| English (default) | `en` | `https://protech.lbp-support.com/` | LTR |
+| Arabic | `ar` | `https://protech.lbp-support.com/ar/` | RTL |
+
+Do not assume these stay the only languages. At the start of a task, list languages via WordPress MCP or WPML. If a new language appears, include it.
+
+### Content pairing (pages, as of last check)
+
+English and Arabic pages are **separate posts** linked by WPML. Edit both (or translate via WPML), never only EN.
+
+| English | EN ID | Arabic | AR ID |
+| --- | --- | --- | --- |
+| Home | 17 | الرئيسية | 1866 |
+| About | 19 | من نحن | 1861 |
+| Our Services | 21 | الخدمات | 1869 |
+| Products | 23 | المنتجات | 1868 |
+| Blogs | 25 | المقالات | 1862 |
+| Partners | 27 | الشركاء | 1867 |
+| Careers | 29 | الوظائف | 1863 |
+| Contact Us | 31 | تواصل معنا | 1865 |
+
+IDs can change. Resolve the translation with WPML/MCP before editing.
+
+Custom post types that also need EN + AR:
+
+- `project` — Products (`/product/...`)
+- `career` — Careers
+- `partner` — Partners
+- `post` — Blog articles
+
+### WPML workflow
+
+1. Find the item in the default language (English).
+2. Find the translation (Arabic `+` / pencil in WPML, or MCP/REST `lang=ar`).
+3. Apply the same **functional** change on both. Translate strings; do not leave English on `/ar/` or Arabic on `/`.
+4. Theme Builder, global modules, menus, widgets, and CF7 forms are translatable too. A header change that only exists in EN is unfinished.
+5. String Translation / WPML → Translation Dashboard for theme strings, admin texts, and Divi global variables when they are not in page content.
+6. RTL: Arabic must look correct (alignment, icons, sliders, absolute positions). Shared CSS must not break LTR. Prefer logical properties (`margin-inline-start`) or `html[lang="ar"]` / `.rtl` overrides.
+7. Menus: update **both** language menus and the language switcher labels/URLs.
+8. Do not create a new EN page/CPT without creating and linking the AR translation (and the reverse).
+
+WPML docs for Divi: [Translate Divi with WPML](https://wpml.org/documentation/theme-compatibility/divi-builder/).
+
+---
+
+## Where each change goes
+
+| Change | Place | Not here |
+| --- | --- | --- |
+| Page/section copy, modules, spacing, images in a layout | Divi Builder on that page **and** its AR/EN twin | Theme files, WPCode (unless CSS/JS is required) |
+| Global header / footer / body template | Divi Theme Builder + WPML translation of that layout | `header.php` / `footer.php` |
+| Custom PHP | WPCode PHP snippet | `functions.php`, new plugin, mu-plugin |
+| Custom CSS | WPCode CSS snippet | Divi theme stylesheet, child theme |
+| Custom JS | WPCode JS snippet | Divi scripts, theme `js/` |
+| Tracking / head-foot tags | WPCode Headers & Footers | Theme Integration tab (avoid unless user insists) |
+| New landing page | WP page + Divi + WPML translation | PHP template |
+| Products / partners / careers | CPT `project` / `partner` / `career` + translation | Hardcoded Divi modules only, unless that is already the pattern |
+| Forms | Contact Form 7 + WPML | New form plugin |
+| Redirects / cache | LiteSpeed / cPanel / WP-CLI `wp cache flush` | Random PHP redirects unless requested |
+| Server files, cron, SSL, email, databases | cPanel MCP or SSH | Invented local files, Hostinger WP tools |
+| Plugin/theme inspect, bulk WP ops, search-replace | WP-CLI over SSH | Theme file edits, custom plugins |
+
+---
+
+## Site map (frontend)
+
+- Home, About, Our Services, Products, Blogs, Partners, Careers, Contact Us
+- Language switcher: `العربية` / English
+- Products CPT archive/detail under `/product/`
+- Contact Form 7 on Contact
+- LiteSpeed Cache plugin is active — purge after **every** change (`wp litespeed-purge all`)
+
+REST namespaces seen on the site: `wp/v2`, `wp/v2/wpmcp`, `jwt-auth/v1`, `wpml/v1`, `wpml/st/v1`, `divi/v1`, `difl/v5`, `contact-form-7/v1`, `litespeed/v1`, `wp-abilities/v1`.
+
+---
+
+## How to start a task
+
+1. Discover **WordPress MCP** (`user-wordpress-mcp` from `mcp.json` → `wordpress-mcp`) and confirm auth. Call `mcp_auth` if the namespace only shows that tool.
+2. If the task needs hosting, files, SSH, or WP-CLI: read `credential`, then discover **cPanel MCP** (`user-cpanel` from `mcp.json` → `cpanel`) and/or test `ssh lbpsupport`.
+3. Confirm WPML languages (expect `en` + `ar` unless MCP shows more).
+4. Identify the exact pages/CPTs/layouts/snippets involved in **both** languages.
+5. Decide the layer: Divi content vs WPCode vs WPML strings vs plugin setting vs cPanel/SSH/WP-CLI.
+6. Implement in that layer only. No theme file edits.
+7. Verify in the browser: English URL **and** `/ar/` counterpart, desktop and a mobile width if layout/CSS changed.
+8. After the change: purge LiteSpeed Cache (`wp litespeed-purge all`). After Divi/visual work, also clear Divi static CSS. Then verify EN + `/ar/`.
+9. Update `report.html` with this task (status + what changed, and every place you edited). See **Task report**.
+
+---
+
+## Task report — `report.html` after every change
+
+File: `report.html` at the project root. This is the running log of work on the live site.
+
+**After every successful change**, update the report before you call the task done. Do not wait for the user to ask.
+
+Keep the report **professional, concise, and visually distinct** (current creative layout). Do not turn it into a long dump.
+
+Each task entry must include only:
+
+| Field | What to write |
+| --- | --- |
+| المهمة | What was asked |
+| الحالة | e.g. مكتمل / جزئي |
+| ما تم تعديله | What actually changed — skip items you only reviewed and left as-is |
+
+If the same change landed in **more than one place**, list every place (EN + AR, Theme Builder footer/body, Divi Library, WPCode snippet, etc.) with language and layout/post ID when you have it.
+
+Do not put passwords, Application Passwords, or tokens in the report.
+
+---
+
+## Verification
+
+- Purge LiteSpeed Cache **before** front-end checks. Otherwise you may be looking at old HTML.
+- A screenshot of one language is not done. Click through the changed flow on **EN and AR**.
+- Check RTL on Arabic (nav, buttons, icons, forms, sliders).
+- Check that WPCode did not 500 the site (PHP errors).
+- Shared state (menus, footer, forms, quoted prices) must match across pages in the same language.
+
+---
+
+## Credentials
+
+All live-site credentials live **only** in `credential` at the project root: WordPress admin, cPanel, API token, SSH alias, WP-CLI.
+
+- Read `credential` when you need wp-admin, cPanel, SSH, or WP-CLI.
+- Do not ask the user to re-send passwords if `credential` is present.
+- That file is local-only. Do not commit it. Do not paste its contents into `AGENTS.md`, MCP config, snippets, or chat.
+- WordPress MCP and cPanel MCP are already wired in Cursor `mcp.json` (`wordpress-mcp` and `cpanel`). Use those servers; do not recreate them.
+- WordPress MCP uses the **Application Password** named `Cursor MCP` (in `credential` / `mcp.json`) — not the raw admin password, unless the user says otherwise.
+- cPanel MCP uses the API token in `credential` / `mcp.json`, not the cPanel password, unless the user says otherwise.
+- Never hardcode API keys in WPCode; use existing plugin settings or ask the user for an env/admin setting.

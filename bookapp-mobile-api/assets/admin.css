@@ -1,0 +1,21 @@
+.bookapp-admin h2 { margin-top: 28px; }
+.bookapp-admin .form-table label { margin-inline-end: 12px; }
+.bookapp-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.bookapp-row input, .bookapp-row select { min-width: 140px; }
+.bookapp-scale {
+  display: flex;
+  gap: 2px;
+  margin-top: 8px;
+  max-width: 320px;
+}
+.bookapp-scale span {
+  flex: 1;
+  height: 18px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,.08);
+}
+.bookapp-image-preview img {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 6px;
+}

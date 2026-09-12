@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>حساب الرحلة — محمد سمير وحمادة</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --paper: #fffdf8;
+      --ink: #1f1a14;
+      --muted: #6b6258;
+      --line: #e6ddd0;
+      --hamada: #1f6f5b;
+      --hamada-soft: #e7f4ef;
+      --mohamed: #8a4b1f;
+      --mohamed-soft: #f8efe6;
+      --owe: #9b2c2c;
+      --owe-soft: #fdecec;
+      --ok: #1f6f5b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, #fff 0, transparent 40%),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 18px 56px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .card .label {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .card .value {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .card.final {
+      background: var(--owe-soft);
+      border-color: #f0c4c4;
+      grid-column: span 2;
+    }
+
+    .card.final .value {
+      color: var(--owe);
+      font-size: 1.8rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      text-align: right;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      background: #f7f1e7;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    .who-h { color: var(--hamada); font-weight: 700; }
+    .who-m { color: var(--mohamed); font-weight: 700; }
+    .who-both { color: #3d4a6b; font-weight: 700; }
+
+    .section {
+      margin: 28px 0 12px;
+      font-size: 1.15rem;
+    }
+
+    .note {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      color: var(--muted);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0 8px;
+    }
+
+    .box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+
+    .box.hamada { background: var(--hamada-soft); }
+    .box.mohamed { background: var(--mohamed-soft); }
+
+    .box h3 { margin: 0 0 10px; font-size: 1.05rem; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 0;
+    }
+
+    .row.total {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #c9bba8;
+      font-weight: 700;
+    }
+
+    .formula {
+      margin-top: 16px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px dashed #d7c9b4;
+    }
+
+    .formula strong { color: var(--owe); }
+
+    @media (max-width: 800px) {
+      .cards, .split { grid-template-columns: 1fr 1fr; }
+      .card.final { grid-column: span 2; }
+    }
+
+    @media (max-width: 560px) {
+      .cards, .split { grid-template-columns: 1fr; }
+      .card.final { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>حساب الرحلة بين محمد سمير وحمادة</h1>
+    <p class="subtitle">المصاريف الفعلية تتوزع بالنص، والتحويلات تتحسب تسوية مش مصروف جديد.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="label">إجمالي مصاريف الرحلة</div>
+        <div class="value num">24,840 ج</div>
+      </div>
+      <div class="card">
+        <div class="label">نصيب كل واحد</div>
+        <div class="value num">12,420 ج</div>
+      </div>
+      <div class="card final">
+        <div class="label">الفاضل على محمد سمير يدفعه لحمادة</div>
+        <div class="value num">5,440 ج</div>
+      </div>
+    </div>
+
+    <h2 class="section">1) مصاريف الرحلة</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>البند</th>
+          <th>الإجمالي</th>
+          <th>دفع حمادة</th>
+          <th>دفع محمد سمير</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>حجز الفندق</td>
+          <td class="num">9,000</td>
+          <td class="num who-h">9,000</td>
+          <td class="num">0</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>حجز إضافي</td>
+          <td class="num">3,500</td>
+          <td class="num who-h">3,500</td>
+          <td class="num">0</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>كافيه أول يوم</td>
+          <td class="num">1,150</td>
+          <td class="num">0</td>
+          <td class="num who-m">1,150</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>شاورما أول يوم</td>
+          <td class="num">980</td>
+          <td class="num who-h">400</td>
+          <td class="num who-m">580</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>سوبر ماركت الخارجي</td>
+          <td class="num">1,550</td>
+          <td class="num who-h">1,550</td>
+          <td class="num">0</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>كافيه</td>
+          <td class="num">1,250</td>
+          <td class="num who-h">1,250</td>
+          <td class="num">0</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>سوبر ماركت</td>
+          <td class="num">400</td>
+          <td class="num who-h">350</td>
+          <td class="num who-m">50</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>سوبر ماركت</td>
+          <td class="num">200</td>
+          <td class="num who-h">200</td>
+          <td class="num">0</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>تلفريك</td>
+          <td class="num">1,000</td>
+          <td class="num who-h">1,000</td>
+          <td class="num">0</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>أكلة سمك</td>
+          <td class="num">4,710</td>
+          <td class="num who-h">4,710</td>
+          <td class="num">0</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>مواصلات أوبر</td>
+          <td class="num">1,100</td>
+          <td class="num who-h">900</td>
+          <td class="num who-m">200</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><strong>الإجمالي</strong></td>
+          <td class="num"><strong>24,840</strong></td>
+          <td class="num who-h"><strong>22,860</strong></td>
+          <td class="num who-m"><strong>1,980</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="section">2) تحويلات (مش مصروف رحلة)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>العملية</th>
+          <th>المبلغ</th>
+          <th>التأثير</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>محمد سمير حوّل لحمادة</td>
+          <td class="num">5,000</td>
+          <td>تسوية لصالح حمادة</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>محمد سمير أخذ من حمادة</td>
+          <td class="num">2,000</td>
+          <td>يرجع 2,000 من التحويل السابق</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>محمد سمير حوّل لحمادة</td>
+          <td class="num">2,000</td>
+          <td>تسوية لصالح حمادة</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><strong>صافي ما دفعه محمد لحمادة كتحويل</strong></td>
+          <td class="num"><strong>5,000</strong></td>
+          <td>5,000 − 2,000 + 2,000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="split">
+      <div class="box hamada">
+        <h3>حمادة</h3>
+        <div class="row"><span>دفع من مصاريف الرحلة</span><span class="num">22,860</span></div>
+        <div class="row"><span>نصيبه من الرحلة</span><span class="num">12,420</span></div>
+        <div class="row total"><span>زيادة دفعها عن نصيبه</span><span class="num">10,440</span></div>
+        <div class="row"><span>استلم تحويلات من محمد</span><span class="num">5,000</span></div>
+        <div class="row total"><span>باقي له على محمد</span><span class="num">5,440</span></div>
+      </div>
+      <div class="box mohamed">
+        <h3>محمد سمير</h3>
+        <div class="row"><span>دفع من مصاريف الرحلة</span><span class="num">1,980</span></div>
+        <div class="row"><span>نصيبه من الرحلة</span><span class="num">12,420</span></div>
+        <div class="row total"><span>ناقص عن نصيبه</span><span class="num">10,440</span></div>
+        <div class="row"><span>حوّل لحمادة</span><span class="num">5,000</span></div>
+        <div class="row total"><span>فاضل يدفعه لحمادة</span><span class="num">5,440</span></div>
+      </div>
+    </div>
+
+    <div class="formula">
+      نصيب محمد 12,420 − مصاريفه 1,980 − تحويلاته 5,000 =
+      <strong>5,440 جنيه</strong>
+    </div>
+
+    <p class="note">
+      التحويلات مش بند رحلة: 5,000 حوالة، بعدين محمد أخذ 2,000، بعدين حوالة تانية 2,000.
+      الصافي اللي وصل حمادة كتحويل = 5,000 جنيه. بعد كده عشان الرحلة تبقى بالنص،
+      محمد سمير مطلوب منه <strong>5,440 جنيه</strong> لحمادة.
+    </p>
+  </div>
+</body>
+</html>

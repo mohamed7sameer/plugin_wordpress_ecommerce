@@ -1,0 +1,613 @@
+###############################################################################
+# BookApp API — REST Client
+# افتح الملف في Cursor / VS Code مع إضافة REST Client
+# كل طلب: Send Request فوق السطر
+#
+# Site:     https://books.ay7aaga.com
+# API:      https://books.ay7aaga.com/wp-json
+# Test user: bookapp-app / BookApp#2026Test
+# License:  bookapp-mobile-api يعمل على books.ay7aaga.com فقط
+#           دومين تاني → bookapp_site_locked 403 / التفعيل يتوقف
+#
+# «العرض في التطبيق»: منتج / تصنيف / وسم / مؤلف / دار نشر متعلّم «مخفي» في
+# ووردبريس بيختفي من كل ردود الـ API دي (قوائم + بحث + هوم + مفضلة + مقارنة)،
+# والمنتج المفرد بيرجع 404. بيتظبط من صفحة المنتج أو صفحة التيرم في wp-admin
+# (عمود «التطبيق» + Quick Edit في جدول المنتجات). الافتراضي: ظاهر.
+###############################################################################
+
+@host = https://books.ay7aaga.com
+@base = {{host}}/wp-json
+@bookapp = {{base}}/bookapp/v1
+@store = {{base}}/wc/store/v1
+
+@username = bookapp-app
+@password = BookApp#2026Test
+@email = app.tester@books.ay7aaga.com
+
+@lang = ar
+@productId = 47691
+@orderId = 1
+
+# بعد login انسخ token هنا، أو استخدم {{login.response.body.token}}
+@token =eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2Jvb2tzLmF5N2FhZ2EuY29tIiwiaWF0IjoxNzg4NTUxNDAwLCJleHAiOjE3OTExNDM0MDAsInVzZXJfaWQiOjEyNzgsImp0aSI6IlpkcTdZU3N6bThYS0JGam5DOHZkZnV1dUtxQkozTFY4In0.W_180tmS0hcQtQvYflCQqSAVpua91cjMDmzMoBbUB50
+# بعد Bootstrap / أول wishlist انسخ guest_token هنا — من غير نفس التوكن المفضلة هتبان فاضية
+@guest = {{bootstrap.response.body.guest_token}}
+@cartToken =
+@nonce =
+
+###############################################################################
+# 1) APP — bootstrap / home / pages
+###############################################################################
+
+### Bootstrap (أول طلب — خزن X-BookApp-Guest من الهيدر)
+# @name bootstrap
+GET {{bookapp}}/bootstrap?lang={{lang}}
+Accept: application/json
+X-BookApp-Platform: android
+X-BookApp-Version: 1.0.0
+
+### Settings — هوية الأب + نسخ التطبيق
+GET {{bookapp}}/settings?lang={{lang}}
+Accept: application/json
+
+### Settings — فحص نسخة أندرويد (status.update_available / force_update)
+GET {{bookapp}}/settings?lang={{lang}}&platform=android&app_version=1.0.0
+Accept: application/json
+X-BookApp-Platform: android
+X-BookApp-Version: 1.0.0
+
+### Settings — إنجليزي
+GET {{bookapp}}/settings?lang=en
+Accept: application/json
+
+### Countries — دول الشحن (33 دولة عليها Zones)
+GET {{bookapp}}/countries?lang={{lang}}
+Accept: application/json
+
+### Countries + states
+GET {{bookapp}}/countries?lang={{lang}}&include_states=1
+Accept: application/json
+
+### Country — مصر والمحافظات
+GET {{bookapp}}/countries/EG?lang={{lang}}
+Accept: application/json
+
+### Countries — كل دول ووكومرس (مش بس اللي عليها شحن)
+GET {{bookapp}}/countries?lang={{lang}}&shippable=0
+Accept: application/json
+
+### Home (القديمة — هتتشال بعد اعتماد V2)
+GET {{bookapp}}/home?lang={{lang}}
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+### Home V2 — الهوم الجديدة (كومبوننتس مرتبة من BookApp → Home Builder)
+# الرد: { lang, components: [ { component, data } ] }
+# الأنواع: announcement / banners / component_ids / products_section / call_to_action
+# actionType: category | tag | product | author | publisher | url | ""
+# actionTarget: ID كنص، أو الرابط الكامل لو actionType=url
+GET {{base}}/bookapp/v2/home?lang={{lang}}
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+### Home V2 — إنجليزي
+GET {{base}}/bookapp/v2/home?lang=en
+Accept: application/json
+
+### Page — سياسة الخصوصية
+GET {{bookapp}}/pages/privacy-policy?lang={{lang}}
+Accept: application/json
+
+### Page — الشروط
+GET {{bookapp}}/pages/terms-of-use?lang={{lang}}
+Accept: application/json
+
+### Page — الاسترداد
+GET {{bookapp}}/pages/refund_returns?lang={{lang}}
+Accept: application/json
+
+###############################################################################
+# 2) AUTH
+###############################################################################
+
+### Login — الحساب التجريبي
+# @name login
+POST {{bookapp}}/auth/login
+Content-Type: application/json
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}",
+  "expires_in": 2592000
+}
+
+### Register (غير الإيميل قبل التشغيل عشان متكررش حساب)
+POST {{bookapp}}/auth/register
+Content-Type: application/json
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+{
+  "email": "new.user@example.com",
+  "password": "Secret#12345",
+  "first_name": "محمد",
+  "last_name": "أحمد",
+  "phone": "01000000000"
+}
+
+### Forgot password
+POST {{bookapp}}/auth/forgot-password
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{email}}"
+}
+
+### Reset password
+POST {{bookapp}}/auth/reset-password
+Content-Type: application/json
+Accept: application/json
+
+{
+  "login": "{{email}}",
+  "key": "PASTE_RESET_KEY",
+  "password": "NewSecret#12345"
+}
+
+### Me
+GET {{bookapp}}/me
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### Update me
+PATCH {{bookapp}}/me
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+  "first_name": "محمد",
+  "last_name": "أحمد",
+  "display_name": "محمد",
+  "phone": "01000000000"
+}
+
+### Change password
+PUT {{bookapp}}/me/password
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+  "current_password": "{{password}}",
+  "new_password": "BookApp#2026Test"
+}
+
+### Get addresses
+GET {{bookapp}}/me/addresses
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### Update addresses
+PUT {{bookapp}}/me/addresses
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+  "billing": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "phone": "01000000000",
+    "email": "{{email}}",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  },
+  "shipping": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  }
+}
+
+###############################################################################
+# 3) CATALOG — bookapp
+###############################################################################
+
+### Product detail (related + reviews + wishlist flags)
+# attributes = الصفات الظاهرة على صفحة المنتج (pa_writer / pa_publisher / pa_size …)
+# لو الكتاب متعلّم «مخفي من التطبيق» → 404 bookapp_product_missing
+GET {{bookapp}}/products/{{productId}}?lang={{lang}}
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+### Product reviews — read
+GET {{bookapp}}/products/{{productId}}/reviews
+Accept: application/json
+
+### Product reviews — write (JWT + moderation)
+POST {{bookapp}}/products/{{productId}}/reviews
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+  "rating": 5,
+  "content": "كتاب ممتاز"
+}
+
+### Authors — image = صورة المؤلف الحقيقية لو موجودة، أو null لو مفيش (مفيش صورة افتراضية)
+# المؤلف المتعلّم «مخفي من التطبيق» مش بيرجع هنا
+GET {{bookapp}}/authors?search=&page=1
+Accept: application/json
+
+### Publishers — image = صورة الدار الحقيقية لو موجودة، أو null لو مفيش (مفيش صورة افتراضية)
+# الدار المتعلّمة «مخفي من التطبيق» مش بترجع هنا
+GET {{bookapp}}/publishers?search=&page=1
+Accept: application/json
+
+###############################################################################
+# 4) WISHLIST + COMPARE
+###############################################################################
+
+### Wishlist get
+GET {{bookapp}}/wishlist?lang={{lang}}
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+### Wishlist add
+POST {{bookapp}}/wishlist
+Content-Type: application/json
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+{
+  "product_id": {{productId}}
+}
+
+### Wishlist remove
+DELETE {{bookapp}}/wishlist/{{productId}}
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+### Compare get
+GET {{bookapp}}/compare?lang={{lang}}
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+### Compare add
+POST {{bookapp}}/compare
+Content-Type: application/json
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+{
+  "product_id": {{productId}}
+}
+
+### Compare remove
+DELETE {{bookapp}}/compare/{{productId}}
+Accept: application/json
+X-BookApp-Guest: {{guest}}
+
+###############################################################################
+# 5) ORDERS
+###############################################################################
+
+### My orders
+GET {{bookapp}}/orders?page=1
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### Order detail
+GET {{bookapp}}/orders/{{orderId}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### Track order
+POST {{bookapp}}/orders/track
+Content-Type: application/json
+Accept: application/json
+
+{
+  "order_id": {{orderId}},
+  "email": "{{email}}"
+}
+
+### Cancel COD order (processing / pending only)
+POST {{bookapp}}/orders/cancel
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+  "order_id": {{orderId}}
+}
+
+### Cancel COD order — no token (401)
+POST {{bookapp}}/orders/cancel
+Content-Type: application/json
+Accept: application/json
+
+{
+  "order_id": {{orderId}}
+}
+
+###############################################################################
+# 6) CHECKOUT + EASYKASH
+# بعد GET cart: انسخ هيدر Cart-Token و Nonce للمتغيرات فوق
+###############################################################################
+
+### Checkout COD
+POST {{bookapp}}/checkout
+Content-Type: application/json
+Accept: application/json
+X-BookApp-App: 1
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+Authorization: Bearer {{token}}
+
+{
+  "billing_address": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "email": "{{email}}",
+    "phone": "01000000000",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  },
+  "shipping_address": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  },
+  "payment_method": "cod"
+}
+
+### Checkout EasyKash (افتح app_payment.payment_url في WebView)
+POST {{bookapp}}/checkout
+Content-Type: application/json
+Accept: application/json
+X-BookApp-App: 1
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+Authorization: Bearer {{token}}
+
+{
+  "billing_address": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "email": "{{email}}",
+    "phone": "01000000000",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  },
+  "shipping_address": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  },
+  "payment_method": "easykash"
+}
+
+### EasyKash return (بيرجع عليه الـ WebView بعد الدفع — مش بتناديه بإيدك عادة)
+GET {{bookapp}}/payments/easykash/return?order_id={{orderId}}&status=SUCCESS
+Accept: application/json
+
+###############################################################################
+# 7) STORE API — catalog
+###############################################################################
+
+### Products list (المتوفر فقط — نفاد المخزون متشال)
+GET {{store}}/products?per_page=20&page=1&search=&lang={{lang}}
+Accept: application/json
+
+### Products by author (pa_writer — term_id من /bookapp/v1/authors)
+# مثال: 2786 = زكي نجيب محمود — مش attribute + attribute_term (دول wc/v3)
+GET {{store}}/products?attributes[0][attribute]=pa_writer&attributes[0][term_id]=2786&per_page=20&page=1&lang={{lang}}
+Accept: application/json
+
+### Products by publisher (pa_publisher — term_id من /bookapp/v1/publishers)
+GET {{store}}/products?attributes[0][attribute]=pa_publisher&attributes[0][term_id]=374&per_page=20&page=1&lang={{lang}}
+Accept: application/json
+
+### Products on sale
+GET {{store}}/products?per_page=20&on_sale=true&lang={{lang}}
+Accept: application/json
+
+### Product by id
+GET {{store}}/products/{{productId}}
+Accept: application/json
+
+### Product categories
+GET {{store}}/products/categories?per_page=100
+Accept: application/json
+
+### Product categories — الرئيسية فقط
+GET {{store}}/products/categories?parent=0&per_page=100
+Accept: application/json
+
+### Product categories — فرعيات قسم (سور الأزبكية)
+GET {{store}}/products/categories?parent=187&per_page=100
+Accept: application/json
+
+### Product category by id
+GET {{store}}/products/categories/198
+Accept: application/json
+
+### Attributes
+GET {{store}}/products/attributes
+Accept: application/json
+
+### Attribute terms (بدّل id)
+GET {{store}}/products/attributes/4/terms?per_page=50
+Accept: application/json
+
+### Tags
+GET {{store}}/products/tags?per_page=50
+Accept: application/json
+
+### Brands
+GET {{store}}/products/brands
+Accept: application/json
+
+### Store reviews
+GET {{store}}/products/reviews?per_page=20
+Accept: application/json
+
+### Collection data (facets)
+GET {{store}}/products/collection-data?calculate_price_range=true&calculate_attribute_counts=true
+Accept: application/json
+
+###############################################################################
+# 8) STORE API — cart
+###############################################################################
+
+### Get cart (خزن Cart-Token و Nonce من هيدر الرد)
+# @name cart
+GET {{store}}/cart
+Accept: application/json
+
+### Add item
+POST {{store}}/cart/add-item
+Content-Type: application/json
+Accept: application/json
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+
+{
+  "id": {{productId}},
+  "quantity": 1
+}
+
+### Update item (حط key من رد السلة)
+POST {{store}}/cart/update-item
+Content-Type: application/json
+Accept: application/json
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+
+{
+  "key": "PASTE_ITEM_KEY",
+  "quantity": 2
+}
+
+### Remove item
+POST {{store}}/cart/remove-item
+Content-Type: application/json
+Accept: application/json
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+
+{
+  "key": "PASTE_ITEM_KEY"
+}
+
+### Cart items
+GET {{store}}/cart/items
+Accept: application/json
+Cart-Token: {{cartToken}}
+
+### Apply coupon
+POST {{store}}/cart/apply-coupon
+Content-Type: application/json
+Accept: application/json
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+
+{
+  "code": "SAVE10"
+}
+
+### Remove coupon
+POST {{store}}/cart/remove-coupon
+Content-Type: application/json
+Accept: application/json
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+
+{
+  "code": "SAVE10"
+}
+
+### Cart coupons
+GET {{store}}/cart/coupons
+Accept: application/json
+Cart-Token: {{cartToken}}
+
+### Update customer (يحسب الشحن)
+POST {{store}}/cart/update-customer
+Content-Type: application/json
+Accept: application/json
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+
+{
+  "billing_address": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "email": "{{email}}",
+    "phone": "01000000000",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  },
+  "shipping_address": {
+    "first_name": "محمد",
+    "last_name": "أحمد",
+    "address_1": "شارع التحرير",
+    "city": "القاهرة",
+    "state": "EGGZ",
+    "postcode": "11511",
+    "country": "EG"
+  }
+}
+
+### Select shipping rate
+POST {{store}}/cart/select-shipping-rate
+Content-Type: application/json
+Accept: application/json
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+
+{
+  "package_id": 0,
+  "rate_id": "flat_rate:4"
+}
+
+### Store checkout GET
+GET {{store}}/checkout
+Accept: application/json
+Nonce: {{nonce}}
+Cart-Token: {{cartToken}}
+
+### Store order after checkout
+GET {{store}}/order/{{orderId}}
+Accept: application/json
+Cart-Token: {{cartToken}}

@@ -1,0 +1,47 @@
+[
+  {
+    "component": "announcement",
+    "data": {
+      "text": "يمكنك الدفع أونلاين من خلال فيزا - محفظة - ميزة كما يمكنك التقسيط من خلال البنك الأهلي 6 و 12 شهر ومن خلال فاليو وسهولة",
+      "actionType": "category", // category, tag, product, author, publisher, url
+      "actionTarget": "198"
+    }
+  },
+  {
+    "component": "banners",
+    "data": {
+      "banner_ids": [1,2,3]
+    }
+  },
+  {
+    "component": "component_ids",
+    "data": {
+      "title": "تصفح حسب التصنيف",
+      "button_text": "عرض الكل",
+      "actionType": "category", // category, tag, product, author, publisher
+      "ids": [187,198,197],
+      "default_image": "https://books.ay7aaga.com/wp-content/uploads/2024/04/مكتبة-أي-حاجة-في-سور-الازبكية.jpg"
+    }
+  },
+  {
+    "component" : "products_section",
+    "data": {
+      "title": "المنتجات المميزة",
+      "button_text": "عرض الكل",
+      "sort_by": "newest", // newest, oldest, best_selling, price_low_to_high, price_high_to_low
+      "action_type": "category", // category,tag, product, author, publisher
+      "action_target": "198"
+    }
+  },
+  {
+    "component" : "call_to_action",
+    "data": {
+      "title": "أي حاجة لبيع الكتب الورقية",
+      "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+      "button_text": "عرض الكل",
+      "actionType": "category", // category, tag, product, author, publisher, url
+      "actionTarget": "198"
+    }
+  }
+
+]

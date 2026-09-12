@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BookApp — إلغاء الطلب (COD)</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #fff;
+      --ink: #122033;
+      --muted: #5b6b7c;
+      --line: #e4e9ef;
+      --blue: #1d4ed8;
+      --blue-soft: #e8eefc;
+      --get: #0f766e;
+      --post: #1d4ed8;
+      --shadow: 0 10px 30px rgba(18, 32, 51, .06);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font: 16px/1.7 "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    header {
+      background: #0f2744;
+      color: #fff;
+      padding: 28px 20px 22px;
+    }
+    header .wrap, main, footer .wrap { max-width: 1080px; margin: 0 auto; }
+    header h1 { margin: 0 0 6px; font-size: 28px; }
+    header p { margin: 0; color: #c9d6e6; }
+    .base {
+      display: inline-block;
+      margin-top: 14px;
+      background: #16355a;
+      color: #dbeafe;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      direction: ltr;
+    }
+    main { padding: 0 20px; }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 20px 0;
+      box-shadow: var(--shadow);
+    }
+    nav.toc a { color: var(--blue); text-decoration: none; }
+    nav.toc ul { margin: 8px 0 0; padding-right: 18px; }
+    section { margin: 28px 0 40px; }
+    h2 { margin: 0 0 8px; font-size: 22px; }
+    h3 { margin: 18px 0 8px; font-size: 17px; }
+    .lead { color: var(--muted); margin: 0 0 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      margin: 12px 0;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+    .method {
+      font: 700 12px/1 Consolas, monospace;
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 6px;
+      min-width: 64px;
+      text-align: center;
+    }
+    .GET { background: var(--get); }
+    .POST { background: var(--post); }
+    .path {
+      font-family: Consolas, "Courier New", monospace;
+      direction: ltr;
+      text-align: left;
+      flex: 1;
+      word-break: break-all;
+    }
+    .auth {
+      font-size: 12px;
+      background: var(--blue-soft);
+      color: #1e3a8a;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+    .card-body { padding: 14px; }
+    .card-body p { margin: 0 0 10px; }
+    pre, code {
+      font-family: Consolas, "Courier New", monospace;
+      direction: ltr;
+      text-align: left;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 10px;
+      overflow: auto;
+      font-size: 13px;
+      margin: 8px 0 0;
+    }
+    .ex-label {
+      margin: 14px 0 0;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+    .ex-label.req { color: #1d4ed8; }
+    .ex-label.res { color: #0f766e; }
+    .ex-label.err { color: #b91c1c; }
+    .card-body > .ex-label:first-child { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: right; vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 13px; }
+    .note {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 12px 0;
+    }
+    .warn {
+      background: #fde8e8;
+      border: 1px solid #f5b5b5;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 12px 0;
+      color: #7f1d1d;
+    }
+    .ok {
+      background: #ecfdf3;
+      border: 1px solid #86efac;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 12px 0;
+    }
+    ol.app { padding-right: 22px; }
+    ol.app li { margin: 6px 0; }
+    footer { padding: 24px 20px 40px; color: var(--muted); }
+    footer a { color: var(--blue); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>BookApp — إلغاء الطلب</h1>
+      <p>توثيق إلغاء طلب الدفع عند الاستلام من الأب — قبل ما الأدمن ياخد عليه أي أكشن. آخر تحديث: 12 سبتمبر 2026.</p>
+      <div class="base">POST https://books.ay7aaga.com/wp-json/bookapp/v1/orders/cancel</div>
+    </div>
+  </header>
+
+  <main>
+    <nav class="toc">
+      <strong>الأقسام</strong>
+      <ul>
+        <li><a href="#overview">نظرة عامة</a></li>
+        <li><a href="#rules">متى ينفع الإلغاء</a></li>
+        <li><a href="#can-cancel">فلاج can_cancel</a></li>
+        <li><a href="#list">قائمة الطلبات</a></li>
+        <li><a href="#detail">تفاصيل طلب</a></li>
+        <li><a href="#cancel">إلغاء الطلب</a></li>
+        <li><a href="#errors">الأخطاء</a></li>
+        <li><a href="#app">شغل الأب خطوة بخطوة</a></li>
+      </ul>
+    </nav>
+
+    <section id="overview">
+      <h2>نظرة عامة</h2>
+      <p class="lead">العميل يقدر يلغي طلب <strong>الدفع عند الاستلام</strong> من الأب طالما الأدمن لسه ما غيّرش حالته في الداشبورد. القواعد على السيرفر. الأب يعرض الزرار وينادي الـ endpoint بس.</p>
+      <ul>
+        <li>الإلغاء من <code>bookapp/v1</code> — مش من Store API ومش من <code>wc/v3</code>.</li>
+        <li>لازم مستخدم مسجّل (JWT). الزائر مفيش عنده قائمة طلبات وبالتالي مفيش إلغاء.</li>
+        <li>بعد النجاح الحالة تبقى <code>cancelled</code> والمخزون يرجع في ووكومرس تلقائيًا.</li>
+        <li>الطلبات الجاهزة للتجربة في <code>bookapp-api.http</code> (قسم ORDERS).</li>
+      </ul>
+      <div class="warn">
+        <strong>المسار الصح:</strong> <code>POST /bookapp/v1/orders/cancel</code> + <code>order_id</code> في البودي — نفس شكل التتبع.
+        <strong>متستخدمش</strong> <code>POST /orders/{id}/cancel</code>. المسار المتداخل الـ CDN بيصده (403 Forbidden).
+      </div>
+    </section>
+
+    <section id="rules">
+      <h2>متى ينفع الإلغاء</h2>
+      <p class="lead">السيرفر بيسمح بالإلغاء لو الشروط الثلاثة اتحققت معًا. الأب <strong>مايحسبش</strong> الشرط بنفسه.</p>
+      <table>
+        <tr><th>الشرط</th><th>القيمة</th><th>ملاحظة</th></tr>
+        <tr><td>المالك</td><td>الطلب بتاع نفس مستخدم الـ JWT</td><td>طلب حد تاني → 404 مش 403</td></tr>
+        <tr><td>الدفع</td><td dir="ltr"><code>payment_method === "cod"</code></td><td>EasyKash والمدفوع أونلاين مش بيتلغوا من الأب</td></tr>
+        <tr><td>الحالة</td><td dir="ltr"><code>processing</code> أو <code>pending</code></td><td>يعني الأدمن لسه ما غيّرش الحالة (شحن / مكتمل / ملغي…)</td></tr>
+      </table>
+      <div class="note">
+        أوردر COD على كتب ورقية عادة بيتعمل على طول بحالة <code>processing</code> (قيد التنفيذ).
+        لو الأدمن غيّر الحالة، <code>can_cancel</code> يبقى <code>false</code> ولو الأب نادى الإلغاء يرجع <code>409</code>.
+      </div>
+    </section>
+
+    <section id="can-cancel">
+      <h2>فلاج <code>can_cancel</code></h2>
+      <p class="lead">الفلاج موجود في قائمة الطلبات، تفاصيل الطلب، وتتبع الطلب، ورد الإلغاء نفسه.</p>
+      <table>
+        <tr><th>القيمة</th><th>معنى للأب</th></tr>
+        <tr><td dir="ltr"><code>true</code></td><td>اعرض زر «إلغاء الطلب». المستخدم الحالي يقدر يلغي الطلب ده دلوقتي.</td></tr>
+        <tr><td dir="ltr"><code>false</code></td><td>خبّي الزرار. مش COD، أو الحالة اتغيّرت، أو الطلب مش بتاع المستخدم الحالي (زي التتبع العام).</td></tr>
+      </table>
+      <div class="ok">اعرض الزرار من <code>can_cancel === true</code> فقط. لو غيّرنا القاعدة بعدين (حالة جديدة مثلًا) الأب مش هيحتاج تحديث.</div>
+      <div class="warn">متعملش: <code>status === "processing" && payment_method === "cod"</code> على الجهاز. السيرفر هو المصدر الوحيد.</div>
+    </section>
+
+    <section id="list">
+      <h2>قائمة الطلبات</h2>
+      <article class="card">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/orders</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>طلبات المستخدم الحالي. كل عنصر فيه <code>can_cancel</code>. القائمة مش بترجع أصناف الكتاب.</p>
+          <table>
+            <tr><th>هيدر / كويري</th><th>مطلوب؟</th><th>ملاحظات</th></tr>
+            <tr><td dir="ltr"><code>Authorization: Bearer &lt;jwt&gt;</code></td><td>نعم</td><td>لو الهوست شال الهيدر: <code>X-BookApp-Authorization</code></td></tr>
+            <tr><td dir="ltr"><code>?page=1</code></td><td>لا</td><td>20 طلب في الصفحة</td></tr>
+            <tr><td dir="ltr"><code>?lang=ar</code> أو <code>en</code></td><td>لا</td><td>أو <code>Accept-Language</code> — اسم الحالة</td></tr>
+          </table>
+          <p class="ex-label req">Request</p>
+<pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/orders?page=1
+Accept: application/json
+Authorization: Bearer &lt;jwt&gt;</pre>
+          <p class="ex-label res">Response 200 — طلب COD قابل للإلغاء</p>
+<pre>{
+  "items": [
+    {
+      "id": 12345,
+      "number": "12345",
+      "status": "processing",
+      "status_name": "قيد التنفيذ",
+      "date_created": "2026-09-12T02:26:11+00:00",
+      "total": "95.00",
+      "currency": "EGP",
+      "payment_method": "cod",
+      "payment_title": "الدفع عند الاستلام",
+      "needs_payment": false,
+      "can_cancel": true,
+      "billing": { "first_name": "محمد", "last_name": "أحمد", "email": "user@example.com", "phone": "01000000000", "address_1": "شارع التحرير", "city": "القاهرة", "state": "EGGZ", "postcode": "11511", "country": "EG" },
+      "shipping": { "first_name": "محمد", "last_name": "أحمد", "address_1": "شارع التحرير", "city": "القاهرة", "state": "EGGZ", "postcode": "11511", "country": "EG" },
+      "items": [],
+      "shipping_total": "50",
+      "discount_total": "0"
+    }
+  ],
+  "total": 1,
+  "total_pages": 1,
+  "page": 1
+}</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="detail">
+      <h2>تفاصيل طلب</h2>
+      <article class="card">
+        <div class="card-head">
+          <span class="method GET">GET</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/orders/{id}</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>طلب يخص المستخدم الحالي فقط. التفاصيل بترجع الأصناف + نفس فلاج <code>can_cancel</code>.</p>
+          <p class="ex-label req">Request</p>
+<pre>GET https://books.ay7aaga.com/wp-json/bookapp/v1/orders/12345
+Accept: application/json
+Authorization: Bearer &lt;jwt&gt;</pre>
+          <p class="ex-label res">Response 200 — EasyKash: الزرار مختفي</p>
+<pre>{
+  "id": 12345,
+  "number": "12345",
+  "status": "processing",
+  "status_name": "قيد التنفيذ",
+  "date_created": "2026-09-12T02:26:11+00:00",
+  "total": "95.00",
+  "currency": "EGP",
+  "payment_method": "easykash",
+  "payment_title": "الدفع اونلاين أو تقسيط",
+  "needs_payment": false,
+  "can_cancel": false,
+  "billing": { "first_name": "محمد", "last_name": "أحمد", "email": "user@example.com", "phone": "01000000000", "address_1": "شارع التحرير", "city": "القاهرة", "state": "EGGZ", "country": "EG" },
+  "shipping": { "first_name": "محمد", "last_name": "أحمد", "address_1": "شارع التحرير", "city": "القاهرة", "state": "EGGZ", "country": "EG" },
+  "items": [
+    {
+      "id": 88,
+      "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+      "quantity": 1,
+      "total": "45",
+      "product": { "id": 47691, "sku": "M794", "prices": { "price": "45", "currency_code": "EGP" } }
+    }
+  ],
+  "shipping_total": "50",
+  "discount_total": "0"
+}</pre>
+          <p class="ex-label err">Response 404 — مش موجود أو مش بتاع المستخدم</p>
+<pre>{ "code": "bookapp_order_missing", "message": "Order not found.", "data": { "status": 404 } }</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="cancel">
+      <h2>إلغاء الطلب</h2>
+      <article class="card">
+        <div class="card-head">
+          <span class="method POST">POST</span>
+          <span class="path">https://books.ay7aaga.com/wp-json/bookapp/v1/orders/cancel</span>
+          <span class="auth">JWT</span>
+        </div>
+        <div class="card-body">
+          <p>مفيش سبب إلغاء. البودي فيه <code>order_id</code> فقط. بعد النجاح رجّع نفس شكل تفاصيل الطلب بالحالة الجديدة.</p>
+          <table>
+            <tr><th>الحقل</th><th>النوع</th><th>مطلوب؟</th><th>ملاحظات</th></tr>
+            <tr><td dir="ltr"><code>order_id</code></td><td>رقم</td><td>نعم</td><td>في JSON. من غيره → 400</td></tr>
+          </table>
+          <p class="ex-label req">Request</p>
+<pre>POST https://books.ay7aaga.com/wp-json/bookapp/v1/orders/cancel
+Authorization: Bearer &lt;jwt&gt;
+Content-Type: application/json
+Accept: application/json
+
+{ "order_id": 12345 }</pre>
+          <p class="ex-label res">Response 200</p>
+<pre>{
+  "id": 12345,
+  "number": "12345",
+  "status": "cancelled",
+  "status_name": "ملغي",
+  "date_created": "2026-09-12T02:26:11+00:00",
+  "total": "45",
+  "currency": "EGP",
+  "payment_method": "cod",
+  "payment_title": "الدفع عند الاستلام",
+  "needs_payment": false,
+  "can_cancel": false,
+  "billing": { "first_name": "محمد", "last_name": "أحمد", "email": "user@example.com" },
+  "shipping": { "first_name": "محمد", "last_name": "أحمد" },
+  "items": [
+    {
+      "id": 88,
+      "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+      "quantity": 1,
+      "total": "45",
+      "product": { "id": 47691, "sku": "M794" }
+    }
+  ],
+  "shipping_total": "0",
+  "discount_total": "0"
+}</pre>
+          <div class="note">بعد 200 حدّث شاشة التفاصيل والقائمة من الرد ده. الزرار يختفي لأن <code>can_cancel</code> بقى <code>false</code> و<code>status_name</code> بقى «ملغي».</div>
+        </div>
+      </article>
+    </section>
+
+    <section id="errors">
+      <h2>الأخطاء</h2>
+      <p class="lead">شكل الخطأ ثابت في كل BookApp API: <code>code</code> + <code>message</code> + <code>data.status</code>.</p>
+<pre>{
+  "code": "bookapp_auth_required",
+  "message": "Login required.",
+  "data": { "status": 401 }
+}</pre>
+      <table>
+        <tr><th>HTTP</th><th>code</th><th>متى</th><th>عمل الأب</th></tr>
+        <tr>
+          <td>400</td>
+          <td dir="ltr"><code>bookapp_missing_fields</code></td>
+          <td>البودي من غير <code>order_id</code></td>
+          <td>متحصلش لو بتبعت الـ id من شاشة الطلب</td>
+        </tr>
+        <tr>
+          <td>401</td>
+          <td dir="ltr"><code>bookapp_auth_required</code></td>
+          <td>من غير JWT أو التوكن منتهي</td>
+          <td>ارجع لشاشة الدخول</td>
+        </tr>
+        <tr>
+          <td>404</td>
+          <td dir="ltr"><code>bookapp_order_missing</code></td>
+          <td>الطلب مش موجود أو مش بتاع المستخدم</td>
+          <td>رسالة «الطلب غير موجود» وارجع للقائمة</td>
+        </tr>
+        <tr>
+          <td>409</td>
+          <td dir="ltr"><code>bookapp_order_not_cancellable</code></td>
+          <td>مش COD، أو الحالة اتغيّرت، أو اتلغى قبل كده</td>
+          <td>خبّي الزرار وحدّث الطلب من <code>GET /orders/{id}</code></td>
+        </tr>
+        <tr>
+          <td>500</td>
+          <td dir="ltr"><code>bookapp_order_cancel_failed</code></td>
+          <td>ووكومرس فشل يغيّر الحالة</td>
+          <td>رسالة عامة وجرب تاني</td>
+        </tr>
+      </table>
+      <p class="ex-label err">Response 400</p>
+<pre>{ "code": "bookapp_missing_fields", "message": "order_id is required.", "data": { "status": 400 } }</pre>
+      <p class="ex-label err">Response 401</p>
+<pre>{ "code": "bookapp_auth_required", "message": "Login required.", "data": { "status": 401 } }</pre>
+      <p class="ex-label err">Response 404</p>
+<pre>{ "code": "bookapp_order_missing", "message": "Order not found.", "data": { "status": 404 } }</pre>
+      <p class="ex-label err">Response 409 — مثال: EasyKash أو الأدمن غيّر الحالة</p>
+<pre>{
+  "code": "bookapp_order_not_cancellable",
+  "message": "This order cannot be cancelled.",
+  "data": {
+    "status": 409,
+    "can_cancel": false,
+    "order_status": "processing",
+    "payment_method": "easykash"
+  }
+}</pre>
+      <div class="note">
+        في خطأ 409: <code>data.status</code> = كود HTTP (409). حالة الطلب في <code>data.order_status</code> مش في <code>status</code>.
+      </div>
+    </section>
+
+    <section id="app">
+      <h2>شغل الأب خطوة بخطوة</h2>
+      <article class="card">
+        <div class="card-body">
+          <ol class="app">
+            <li>سجّل دخول → خزن JWT.</li>
+            <li><code>GET /orders</code> ارسم القائمة. لو <code>can_cancel === true</code> ممكن تظهر شارة أو زر مختصر على الكارت.</li>
+            <li>شاشة التفاصيل: <code>GET /orders/{id}</code>. زر «إلغاء الطلب» ظاهر فقط لو <code>can_cancel === true</code>.</li>
+            <li>تأكيد من المستخدم (ديالوج).</li>
+            <li><code>POST /orders/cancel</code> بالجسم <code>{ "order_id": id }</code>.</li>
+            <li>نجاح 200: استبدل بيانات الشاشة بالرد. الزرار يختفي، الحالة «ملغي».</li>
+            <li>409: حدّث الطلب بـ GET وخبّي الزرار. الأدمن غالبًا غيّر الحالة.</li>
+            <li>401: توكن منتهي → إعادة تسجيل.</li>
+          </ol>
+          <h3>حساب تجريبي</h3>
+          <table>
+            <tr><th>Username</th><td dir="ltr"><code>bookapp-app</code></td></tr>
+            <tr><th>Password</th><td dir="ltr"><code>BookApp#2026Test</code></td></tr>
+            <tr><th>Login</th><td dir="ltr"><code>POST /bookapp/v1/auth/login</code></td></tr>
+          </table>
+<pre>POST https://books.ay7aaga.com/wp-json/bookapp/v1/auth/login
+Content-Type: application/json
+
+{ "username": "bookapp-app", "password": "BookApp#2026Test" }</pre>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      BookApp — إلغاء الطلب · الكتالوج الكامل في <a href="bookapp-api-docs.html">bookapp-api-docs.html</a> · طلبات جاهزة في <code>bookapp-api.http</code> (قسم ORDERS)
+    </div>
+  </footer>
+</body>
+</html>

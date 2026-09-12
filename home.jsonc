@@ -1,0 +1,496 @@
+{
+  // ده شريط الإعلان في ال setting هنسيبه زي ما هو 
+  // هيكون بس في action_type,action_target
+  "announcement": {
+    "enabled": true,
+    "text": "يمكنك الدفع أونلاين من خلال فيزا - محفظة - ميزة كما يمكنك التقسيط من خلال البنك الأهلي 6 و 12 شهر ومن خلال فاليو وسهولة",
+    "actionType": "category", // category, tag, product, author, publisher, url
+    "actionTarget": "198"
+  },
+  // هنمسح ال الهيرو وال بنر العروض من ال setting وهنضيف دي مكانها ك repeater
+  "banners": [
+    {
+      "id": "1",
+      "title": "أي حاجة لبيع الكتب الورقية",
+      "subtitle": "في مجموعة أي حاجة.كوم للتسويق الإلكتروني وفرنا أفضل متجر لبيع الكتب الورقية أونلاين",
+      "imageUrl": "https://books.ay7aaga.com/wp-content/uploads/2025/02/البيت-الابيض-في-عهد-ترامب.jpg",
+      "actionType": "category", // category, tag, product, author, publisher, url
+      "actionTarget": "198"
+    },
+    {
+      "id": "2",
+      "title": "تخفيضات متجر كتب اي حاجة",
+      "subtitle": "",
+      "imageUrl": "https://books.ay7aaga.com/wp-content/uploads/2025/06/Purple-Yellow-Modern-Memphis-Financial-Tips-Carousel-Instagram-Post-15.jpg",
+      "actionType": "tag",
+      "actionTarget": "" 
+    }
+  ],
+
+  // لو انا مرجع كاتيجوري في ال setting هنسيبه زي ما هو لو لا هيرجع كل ال parent category
+  // انا بضيف في ال setting ال categories_id
+  "category_section":{
+    "title": "تصفح حسب التصنيف",
+    "button_text": "عرض الكل",
+    "categories": [
+      {
+        "id": "187",
+        "name": "سور الأزبكية",
+        "parent": "0",
+        "count": 5443,
+        "image": {
+          "src": "https://books.ay7aaga.com/wp-content/uploads/2024/04/مكتبة-أي-حاجة-في-سور-الازبكية.jpg"
+        }
+      }
+    ]
+  },
+  
+
+  "special_offers": {
+    "title": "تخفيضات متجر كتب اي حاجة",
+    "products": [
+      {
+        "id": 47691,
+        "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+        "sku": "M794",
+        "on_sale": true,
+        "is_in_stock": true,
+        "average_rating": "4.6",
+        "review_count": 18,
+        "short_description": "رواية عاطفية من سلسلة روايات عبير.",
+        "prices": {
+          "price": "45",
+          "regular_price": "50",
+          "sale_price": "45",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-للكاتبة-انجيلا-ويلس-من-روايات-عبير-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 187, "name": "سور الأزبكية" }],
+        "attributes": [
+          {
+            "id": "pa_writer",
+            "name": "المؤلف",
+            "options": [{ "id": 3277, "name": "انجيلا توماس" }]
+          },
+          {
+            "id": "pa_publisher",
+            "name": "الناشر",
+            "options": [{ "id": 5537, "name": "دار النحاس" }]
+          }
+        ]
+      },
+      {
+        "id": 47644,
+        "name": "رواية سهم فى القلب من روايات احلام",
+        "sku": "M780",
+        "on_sale": true,
+        "is_in_stock": true,
+        "average_rating": "4.4",
+        "review_count": 9,
+        "short_description": "رواية عاطفية خفيفة من سلسلة أحلام.",
+        "prices": {
+          "price": "40",
+          "regular_price": "55",
+          "sale_price": "40",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-سهم-فى-القلب-من-روايات-احلام-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 187, "name": "سور الأزبكية" }],
+        "attributes": [
+          {
+            "id": "pa_writer",
+            "name": "المؤلف",
+            "options": [{ "id": 9001, "name": "أحلام" }]
+          }
+        ]
+      },
+      {
+        "id": 34815,
+        "name": "رواية مذكرات قبو للكاتب الروسي فيودور ديستوفيسكي",
+        "sku": "S228",
+        "on_sale": true,
+        "is_in_stock": true,
+        "average_rating": "4.8",
+        "review_count": 41,
+        "short_description": "عمل كلاسيكي من دوستويفسكي.",
+        "prices": {
+          "price": "95",
+          "regular_price": "110",
+          "sale_price": "95",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2025/05/رواية-مذكرات-قبو-للكاتب-الروسي-فيودور-ديستوفيسكي-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 265, "name": "الكتب الخارجية" }],
+        "attributes": [
+          {
+            "id": "pa_writer",
+            "name": "المؤلف",
+            "options": [{ "id": 8801, "name": "فيودور دوستويفسكي" }]
+          }
+        ]
+      }
+    ]
+  },
+  "featured": {
+    "title": "منتجات مميزة",
+    "products": [
+      {
+        "id": 44940,
+        "name": "مجلة الهلال بطل الشرق صلاح الدين الأيوبى يولية 1956 للكاتب جرجى زيدان",
+        "sku": "L941",
+        "featured": true,
+        "is_in_stock": true,
+        "average_rating": "4.7",
+        "review_count": 12,
+        "short_description": "عدد تراثي نادر من مجلة الهلال.",
+        "prices": {
+          "price": "190",
+          "regular_price": "190",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/03/مجلة-بطل-الشرق-صلاح-الدين-الأيوبى-للكاتب-جرجى-زيدان-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 197, "name": "كتب قديمة ونادرة" }],
+        "attributes": [
+          {
+            "id": "pa_writer",
+            "name": "المؤلف",
+            "options": [{ "id": 9101, "name": "جرجي زيدان" }]
+          }
+        ]
+      },
+      {
+        "id": 46742,
+        "name": "سلسلة روايات رجل المستحيل عدد 127 نقطة الضعف للكاتب نبيل فاروق",
+        "sku": "M600",
+        "featured": true,
+        "is_in_stock": true,
+        "average_rating": "4.9",
+        "review_count": 63,
+        "short_description": "عدد من سلسلة رجل المستحيل.",
+        "prices": {
+          "price": "30",
+          "regular_price": "30",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/03/سلسلة-روايات-رجل-المستحيل-عدد-127-نقطة-الضعف-للكاتب-نبيل-فاروق-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 187, "name": "سور الأزبكية" }],
+        "attributes": [
+          {
+            "id": "pa_writer",
+            "name": "المؤلف",
+            "options": [{ "id": 4132, "name": "نبيل فاروق" }]
+          }
+        ]
+      },
+      {
+        "id": 45271,
+        "name": "مجلة الهلال أكتوبر 1956 الملك الشاب حسين",
+        "sku": "M106",
+        "featured": true,
+        "is_in_stock": true,
+        "average_rating": "4.5",
+        "review_count": 7,
+        "short_description": "عدد تاريخي من مجلة الهلال.",
+        "prices": {
+          "price": "120",
+          "regular_price": "120",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/03/مجلة-الهلال-أكتوبر-1956-الملك-الشاب-حسين-.-.--700x1047.jpeg"
+          }
+        ],
+        "categories": [{ "id": 197, "name": "كتب قديمة ونادرة" }]
+      }
+    ]
+  },
+  "authors": {
+    "title": "مليون اسم واسم",
+    "items": [
+      {
+        "id": 4132,
+        "name": "نبيل فاروق",
+        "count": 213,
+        "image": "https://books.ay7aaga.com/wp-content/uploads/2026/09/نبيل_فاروق.jpg",
+        "bio": "طبيب وأديب مصري، رائد أدب الجيب وأشهر كُتّاب سلسلة رجل المستحيل وملف المستقبل."
+      },
+      {
+        "id": 2305,
+        "name": "نجيب محفوظ",
+        "count": 29,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-author.png",
+        "bio": "أديب مصري حاصل على جائزة نوبل في الأدب عام 1988."
+      },
+      {
+        "id": 2489,
+        "name": "أحمد خالد توفيق",
+        "count": 25,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-author.png",
+        "bio": "طبيب وأديب مصري، العراب، وأحد أبرز رواد أدب الرعب والخيال العلمي عربياً."
+      },
+      {
+        "id": 364,
+        "name": "طه حسين",
+        "count": 56,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-author.png",
+        "bio": "عميد الأدب العربي ووزير المعارف الأسبق."
+      },
+      {
+        "id": 332,
+        "name": "انيس منصور",
+        "count": 120,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-author.png",
+        "bio": "كاتب وصحفي مصري صاحب أسلوب ساخر ومؤلفات واسعة الانتشار."
+      },
+      {
+        "id": 693,
+        "name": "احسان عبد القدوس",
+        "count": 35,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-author.png",
+        "bio": "روائي وصحفي مصري، من أبرز كتاب الرواية الاجتماعية الحديثة."
+      }
+    ]
+  },
+  "publishers": {
+    "title": "دور النشر",
+    "items": [
+      {
+        "id": 3795,
+        "name": "BLOOMSBURY",
+        "count": 18,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-publisher.png"
+      },
+      {
+        "id": 3793,
+        "name": "Penguin Random House",
+        "count": 22,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-publisher.png"
+      },
+      {
+        "id": 4180,
+        "name": "Vision",
+        "count": 14,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-publisher.png"
+      },
+      {
+        "id": 2443,
+        "name": "أخبار الأدب",
+        "count": 31,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-publisher.png"
+      },
+      {
+        "id": 374,
+        "name": "أخبار اليوم",
+        "count": 40,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-publisher.png"
+      },
+      {
+        "id": 4618,
+        "name": "أصوك",
+        "count": 9,
+        "image": "https://books.ay7aaga.com/wp-content/plugins/bookapp-mobile-api/assets/default-publisher.png"
+      }
+    ]
+  },
+  "publishers_cta": {
+    "title": "تعرف على دور النشر",
+    "text": "يمكنك من عرض إصداراتك علينا من خلال إرسال القوائم على الواتساب",
+    "button": "راسلنا",
+    "whatsapp": "201050994329"
+  },
+  "best_sellers": {
+    "title": "مليون كتاب وكتاب",
+    "products": [
+      {
+        "id": 34815,
+        "name": "رواية مذكرات قبو للكاتب الروسي فيودور ديستوفيسكي",
+        "sku": "S228",
+        "isBestSeller": true,
+        "is_in_stock": true,
+        "average_rating": "4.8",
+        "review_count": 41,
+        "short_description": "من أكثر الأعمال مبيعاً في القسم الكلاسيكي.",
+        "prices": {
+          "price": "110",
+          "regular_price": "110",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2025/05/رواية-مذكرات-قبو-للكاتب-الروسي-فيودور-ديستوفيسكي-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 265, "name": "الكتب الخارجية" }],
+        "attributes": [
+          {
+            "id": "pa_writer",
+            "name": "المؤلف",
+            "options": [{ "id": 8801, "name": "فيودور دوستويفسكي" }]
+          }
+        ]
+      },
+      {
+        "id": 46742,
+        "name": "سلسلة روايات رجل المستحيل عدد 127 نقطة الضعف للكاتب نبيل فاروق",
+        "sku": "M600",
+        "isBestSeller": true,
+        "is_in_stock": true,
+        "average_rating": "4.9",
+        "review_count": 63,
+        "prices": {
+          "price": "30",
+          "regular_price": "30",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/03/سلسلة-روايات-رجل-المستحيل-عدد-127-نقطة-الضعف-للكاتب-نبيل-فاروق-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 187, "name": "سور الأزبكية" }],
+        "attributes": [
+          {
+            "id": "pa_writer",
+            "name": "المؤلف",
+            "options": [{ "id": 4132, "name": "نبيل فاروق" }]
+          }
+        ]
+      },
+      {
+        "id": 47644,
+        "name": "رواية سهم فى القلب من روايات احلام",
+        "sku": "M780",
+        "isBestSeller": true,
+        "is_in_stock": true,
+        "average_rating": "4.4",
+        "review_count": 9,
+        "prices": {
+          "price": "55",
+          "regular_price": "55",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-سهم-فى-القلب-من-روايات-احلام-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 187, "name": "سور الأزبكية" }]
+      }
+    ]
+  },
+  "new_arrivals": {
+    "title": "إصدارات حديثة",
+    "products": [
+      {
+        "id": 45965,
+        "name": "كتاب تركيا - إيران والأمن القومى العربى للكاتب الدكتور محمد توفيق غنيم",
+        "sku": "M276",
+        "isNewArrival": true,
+        "is_in_stock": true,
+        "average_rating": "4.3",
+        "review_count": 4,
+        "short_description": "إصدار حديث في السياسة والأمن القومي.",
+        "prices": {
+          "price": "150",
+          "regular_price": "150",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/03/كتاب-تركيا-إيران-والأمن-القومى-العربى-للكاتب-الدكتور-محمد-توفيق-غنيم-700x1029.jpeg"
+          }
+        ],
+        "categories": [{ "id": 198, "name": "إصدارات حديثة" }],
+        "attributes": [
+          {
+            "id": "pa_writer",
+            "name": "المؤلف",
+            "options": [{ "id": 9201, "name": "محمد توفيق غنيم" }]
+          }
+        ]
+      },
+      {
+        "id": 47691,
+        "name": "رواية العشيقة الذهبية للكاتبة انجيلا ويلس من روايات عبير",
+        "sku": "M794",
+        "isNewArrival": true,
+        "is_in_stock": true,
+        "average_rating": "4.6",
+        "review_count": 18,
+        "prices": {
+          "price": "50",
+          "regular_price": "50",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/06/رواية-العشيقة-الذهبية-للكاتبة-انجيلا-ويلس-من-روايات-عبير-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 198, "name": "إصدارات حديثة" }]
+      },
+      {
+        "id": 44940,
+        "name": "مجلة الهلال بطل الشرق صلاح الدين الأيوبى يولية 1956 للكاتب جرجى زيدان",
+        "sku": "L941",
+        "isNewArrival": true,
+        "is_in_stock": true,
+        "average_rating": "4.7",
+        "review_count": 12,
+        "prices": {
+          "price": "190",
+          "regular_price": "190",
+          "sale_price": "",
+          "currency_code": "EGP",
+          "currency_minor_unit": 0
+        },
+        "images": [
+          {
+            "src": "https://books.ay7aaga.com/wp-content/uploads/2026/03/مجلة-بطل-الشرق-صلاح-الدين-الأيوبى-للكاتب-جرجى-زيدان-700x933.jpg"
+          }
+        ],
+        "categories": [{ "id": 198, "name": "إصدارات حديثة" }]
+      }
+    ]
+  }
+}
