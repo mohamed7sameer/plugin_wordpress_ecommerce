@@ -1,4 +1,4 @@
-# BookApp — Agent Instructions
+﻿# BookApp — Agent Instructions
 
 The product name is **BookApp**. Public API namespace is `bookapp/v1` (headers `X-BookApp-*`).
 
@@ -7,16 +7,19 @@ Remote WordPress + WooCommerce store. This workspace is **not** the WordPress co
 The job of this project is a **mobile app API** (products, cart, wishlist, compare, orders, customers). Inspect and change the live site through the right tool: **WordPress MCP** for WP content, **SSH + WP-CLI** for server/CLI, **Hostinger MCP** only if the user asks about this Hostinger account. Read `credential` for connection details. Never copy those secrets into `AGENTS.md`, commits, chat, plugins, or MCP config.
 
 - **Site:** https://books.ay7aaga.com
+- **GitHub backend (this workspace):** https://github.com/mohamed7sameer/plugin_wordpress_ecommerce
+- **GitHub Flutter app:** https://github.com/MohamedSaidEbaid/books_ay7aaga
 - **Admin (hidden login):** https://books.ay7aaga.com/beoneentrence/
-- **Docroot:** `/home/u366802025/domains/ay7aaga.com/public_html/books`
+- **Docroot:** `/home/u281506410/domains/books.ay7aaga.com/public_html`
 - **Theme:** WoodMart + `woodmart-child` — treat parent as vendor code
 - **Commerce:** WooCommerce (books). Wishlist + compare are **WoodMart built-in**, not separate plugins
 - **Custom API code:** plugin `bookapp-mobile-api` only (create it when API work starts)
 - **Languages:** Polylang — Arabic `ar` (default) + English `en`
-- **Hosting:** Hostinger (`u366802025` / hPanel). Not the ProTech cPanel box
+- **Hosting:** Hostinger — user `u281506410` / `186.242.129.217`. SSH alias `books_ay7aaga`. Not the ProTech cPanel box
 - **Cache:** WP-Optimize (`wp-optimize`) + Hostinger CDN — **purge after every change**
 - **Credentials:** WordPress, SSH, WP-CLI, and the Application Password live only in `credential`
 - **API docs (keep in sync):** `bookapp-api-docs.html` + `bookapp-api.http` at the project root
+- **Auth token:** JWT from login, register, and password change lasts **1 year** (`31536000` seconds, `YEAR_IN_SECONDS`). `issue_token()` always uses that lifetime. A shorter `expires_in` from the app is ignored.
 
 ---
 
@@ -31,12 +34,13 @@ The job of this project is a **mobile app API** (products, cart, wishlist, compa
    - WooCommerce REST `wc/v3` — products, orders, customers, coupons
    - WooCommerce Store API `wc/store/v1` — cart / checkout (session + Store API nonce / cart-token)
    - WoodMart wishlist + compare (no public first-party REST — wrap in the custom plugin)
-   - JWT is already on this site at `jwt-auth/v1` (provided by WordPress MCP). Reuse it for the app; do not install a second JWT plugin unless the user asks
+   - JWT: `jwt-auth/v1` is NOT in the REST index on the new server (checked 2026-10-13); the app logs in via `bookapp/v1/auth/login`. Re-check before relying on `jwt-auth/v1`. Reuse it for the app; do not install a second JWT plugin unless the user asks
 7. The site is **bilingual (Polylang)**. Default language is **Arabic**. Before content or product-facing API work, confirm `ar` / `en` and return/translate in the language the client asked for.
 8. The Cursor **cPanel MCP** (`user-cpanel`) is wired to **another project** (`lbp-support.com`). Do **not** use it here. Hostinger WordPress MCP is hosting-level (installs, cache on Hostinger). Prefer SSH/WP-CLI for this site unless the user asks about Hostinger hosting.
 9. **Purge cache after every change** (WP-Optimize + Hostinger cache if HTML/API responses look stale). Details in **Cache** below.
 10. Do not activate/deactivate plugins, change permalinks, or change the hidden-login slug unless the user asked.
 11. **Any change to this project’s API or how the app should call it is unfinished until both local docs are updated:** `bookapp-api-docs.html` and `bookapp-api.http`. Details in **API documentation** below.
+12. **Dual publish (required):** any backend/plugin/docs change is unfinished until it is **both** (a) committed + pushed to the GitHub backend repo `plugin_wordpress_ecommerce`, and (b) deployed to the live server plugin path + cache flushed. Do not leave GitHub ahead of the server or the server ahead of GitHub.
 
 ---
 
@@ -47,8 +51,8 @@ This machine has the live servers in Cursor `mcp.json` (`C:\Users\Admin\.cursor\
 | Job | `mcp.json` key | Cursor namespace | Auth |
 | --- | --- | --- | --- |
 | WordPress content + MCP tools | `wordpress-mcp` | `user-wordpress-mcp` | Application Password in `mcp.json` / `credential` |
-| Hosting (this Hostinger account, if asked) | `hostinger-hosting` / `hostinger-wordpress` | `user-hostinger-*` | Hostinger API token already in `mcp.json` |
-| Shell, files, WP-CLI | SSH `books_ay7aaga` | — | key in `~/.ssh/books_ay7aaga` |
+| Hosting (this Hostinger account, if asked) | project `.cursor/mcp.json` → `hostinger-hosting` / `hostinger-wordpress` (dest account) | `user-hostinger-*` / project MCP | Token in project `.cursor/mcp.json` (gitignored) + `credential` |
+| Shell, files, WP-CLI | SSH `books_ay7aaga` | — | key `~/.ssh/my_hostinger` — see `credential` |
 
 Site plugin: **WordPress MCP** (`wordpress-mcp-trunk`, Automattic, v0.2.5) — endpoint `/wp-json/wp/v2/wpmcp`. The local proxy is `@automattic/mcp-wordpress-remote`. `WP_API_URL` is the site root (`https://books.ay7aaga.com/`), not the hidden-login path.
 
@@ -104,24 +108,23 @@ Prefer the least-destructive layer. Do not SSH-edit WoodMart parent files or dum
 
 ### SSH
 
-- Host alias (local `~/.ssh/config`): `ssh books_ay7aaga` — user `u366802025`, host `72.61.99.247`, port `65002`, key `~/.ssh/books_ay7aaga`
-- The alias `RemoteCommand` starts in `~/domains/ay7aaga.com/public_html` (the domain root). **WordPress lives in `books/`**. After an interactive login: `cd books`
-- Leave that alias as-is. Do not point `RemoteCommand` at `books/` unless the user asks — other paths under `public_html` may be needed
+- Host alias (local `~/.ssh/config`): `ssh books_ay7aaga` — user `u281506410`, host `186.242.129.217`, port `65002`, key `~/.ssh/my_hostinger`
+- The alias `RemoteCommand` starts in `~/domains/books.ay7aaga.com/public_html` (books WP root)
 - One-liners **must** disable `RemoteCommand` / TTY, or the remote `cd` eats the command:
 
 ```bash
-ssh -o RequestTTY=no -o RemoteCommand=none books_ay7aaga 'cd ~/domains/ay7aaga.com/public_html/books && wp plugin list'
+ssh -o RequestTTY=no -o RemoteCommand=none books_ay7aaga 'cd ~/domains/books.ay7aaga.com/public_html && wp plugin list'
 ```
 
 ### WP-CLI
 
 Already installed on the server: `/usr/local/bin/wp` — version 2.12.0. **Do not reinstall** unless `wp --version` fails.
 
-Project config: `/home/u366802025/domains/ay7aaga.com/public_html/books/wp-cli.yml` (`path` + `url`). From the docroot you do not need `--path`.
+Project config: `/home/u281506410/domains/books.ay7aaga.com/public_html/wp-cli.yml` if present (`path` + `url`). From the books docroot you do not need `--path`.
 
 ```bash
 ssh books_ay7aaga
-cd books
+# already in books public_html via RemoteCommand
 wp --version
 wp core version
 wp plugin list
@@ -140,7 +143,7 @@ Plugin **WP-Optimize** (`wp-optimize`) is active. Hostinger also fronts the site
 **After every successful change**, flush before you verify:
 
 ```bash
-ssh -o RequestTTY=no -o RemoteCommand=none books_ay7aaga 'cd ~/domains/ay7aaga.com/public_html/books && wp cache flush'
+ssh -o RequestTTY=no -o RemoteCommand=none books_ay7aaga 'cd ~/domains/books.ay7aaga.com/public_html && wp cache flush'
 ```
 
 If WP-Optimize page cache still looks stale, purge it from the plugin / Hostinger cache tools. Then hit the API or front URL again. Do not deactivate WP-Optimize unless the user asked.
@@ -290,3 +293,4 @@ All live-site credentials live **only** in `credential` at the project root: Wor
 - WordPress MCP is wired in Cursor `mcp.json` (`wordpress-mcp`). Use that server; do not recreate it.
 - WordPress MCP uses the **Application Password** named `Cursor MCP` for user `mo-sa-@APP` (in `credential` / `mcp.json`) — not the raw admin password, unless the user says otherwise.
 - Never hardcode API keys in the custom plugin; use WP options or ask the user for an env/admin setting.
+

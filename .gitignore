@@ -1,3 +1,9 @@
 credential
+.cursor/mcp.json
 .netlify
 .tmp
+
+.tmp-fcm/
+
+.tmp-notif-test/
+tmp-notif-test.sh
