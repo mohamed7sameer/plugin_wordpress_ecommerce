@@ -8,7 +8,7 @@ The job of this project is a **mobile app API** (products, cart, wishlist, compa
 
 - **Site:** https://books.ay7aaga.com
 - **GitHub backend (this workspace):** https://github.com/mohamed7sameer/plugin_wordpress_ecommerce
-- **GitHub Flutter app:** https://github.com/MohamedSaidEbaid/books_ay7aaga
+- **GitHub Flutter app (read-only from this workspace):** https://github.com/MohamedSaidEbaid/books_ay7aaga — reference / inspect only; **never** clone-edit-commit-push that repo from backend work
 - **Admin (hidden login):** https://books.ay7aaga.com/beoneentrence/
 - **Docroot:** `/home/u281506410/domains/books.ay7aaga.com/public_html`
 - **Theme:** WoodMart + `woodmart-child` — treat parent as vendor code
@@ -41,6 +41,7 @@ The job of this project is a **mobile app API** (products, cart, wishlist, compa
 10. Do not activate/deactivate plugins, change permalinks, or change the hidden-login slug unless the user asked.
 11. **Any change to this project’s API or how the app should call it is unfinished until both local docs are updated:** `bookapp-api-docs.html` and `bookapp-api.http`. Details in **API documentation** below.
 12. **Dual publish (required):** any backend/plugin/docs change is unfinished until it is **both** (a) committed + pushed to the GitHub backend repo `plugin_wordpress_ecommerce`, and (b) deployed to the live server plugin path + cache flushed. Do not leave GitHub ahead of the server or the server ahead of GitHub.
+13. **Flutter app repo is read-only here.** Do not modify, commit, push, open PRs against, or deploy from `MohamedSaidEbaid/books_ay7aaga` (or any other Flutter/mobile app repo) while working in this backend workspace. Mobile app changes belong to the Flutter project / its developers — not this WordPress API workspace.
 
 ---
 
